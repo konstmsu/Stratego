@@ -28,21 +28,7 @@ namespace Stratego
         {
             var setup = new InitialSetup();
             var names = setup.GeneratePieces().OrderByDescending(p => p.Rank).GroupBy(p => p.Rank).Select(g => g.Select(p => p.Name).Distinct().Single());
-            names.Should().Equal(new[]
-            {
-                "Bomb",
-                "Marshal",
-                "General",
-                "Colonel",
-                "Major",
-                "Captain",
-                "Lieutenant",
-                "Sergeant",
-                "Miner",
-                "Scout",
-                "Spy",
-                "Flag",
-            });
+            names.Should().Equal("Bomb", "Marshal", "General", "Colonel", "Major", "Captain", "Lieutenant", "Sergeant", "Miner", "Scout", "Spy", "Flag");
         }
     }
 }

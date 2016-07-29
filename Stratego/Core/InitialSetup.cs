@@ -27,15 +27,15 @@ namespace Stratego.Core
                 Repeat(2, () => new OtherPiece(8, "Colonel")),
                 Repeat(1, () => new OtherPiece(9, "General")),
                 Repeat(1, () => new OtherPiece(10, "Marshal")),
-                Repeat(6, () => new Bomb()),
+                Repeat(6, () => new Bomb())
             }.SelectMany(v => v);
         }
     }
 
     public abstract class Piece
     {
-        public readonly int Rank;
         public readonly string Name;
+        public readonly int Rank;
 
         protected Piece(int rank, string name)
         {
