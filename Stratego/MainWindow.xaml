@@ -6,5 +6,29 @@
         xmlns:local="clr-namespace:Stratego"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
-    <Grid />
+    <Window.DataContext>
+        <local:GameViewModel />
+    </Window.DataContext>
+    <ItemsControl ItemsSource="{Binding Board.Rows}">
+        <ItemsControl.ItemTemplate>
+            <DataTemplate>
+                <ItemsControl ItemsSource="{Binding Cells}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Border BorderBrush="Gray" BorderThickness="1">
+                                    <TextBlock Text="{Binding Content}" Foreground="{Binding Color}" Width="50" />
+                                </Border>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </DataTemplate>
+        </ItemsControl.ItemTemplate>
+    </ItemsControl>
 </Window>

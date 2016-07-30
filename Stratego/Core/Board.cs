@@ -23,6 +23,9 @@ namespace Stratego.Core
                 _cells.Add(l);
             }
         }
+
+        public int RowCount => _cells.Count;
+        public int ColumnCount => _cells[0].Count;
     }
 
     public class Cell
