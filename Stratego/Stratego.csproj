@@ -58,8 +58,11 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Core\Field.cs" />
+    <Compile Include="Core\Board.cs" />
+    <Compile Include="Core\Game.cs" />
     <Compile Include="Core\InitialSetup.cs" />
+    <Compile Include="Core\Player.cs" />
+    <Compile Include="Core\Position.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

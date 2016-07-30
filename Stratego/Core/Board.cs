@@ -2,11 +2,13 @@
 
 namespace Stratego.Core
 {
-    public class Field
+    public class Board
     {
-        public List<List<Cell>> Cells = new List<List<Cell>>();
+        readonly List<List<Cell>> _cells = new List<List<Cell>>();
 
-        public Field()
+        public Cell this[Position position] => _cells[position.Row][position.Column];
+
+        public Board()
         {
             var width = 10;
             var height = 10;
@@ -18,7 +20,7 @@ namespace Stratego.Core
                 for (var column = 0; column < width; column++)
                     l.Add(new Cell());
 
-                Cells.Add(l);
+                _cells.Add(l);
             }
         }
     }

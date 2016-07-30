@@ -12,22 +12,22 @@ namespace Stratego.Core
                 yield return factory();
         }
 
-        public IEnumerable<Piece> GeneratePieces()
+        public IEnumerable<Piece> GenerateSinglePlayerPieces(Player owner)
         {
             return new IEnumerable<Piece>[]
             {
-                Repeat(1, () => new Flag()),
-                Repeat(1, () => new Spy()),
-                Repeat(8, () => new Scout()),
-                Repeat(5, () => new Miner()),
-                Repeat(4, () => new OtherPiece(4, "Sergeant")),
-                Repeat(4, () => new OtherPiece(5, "Lieutenant")),
-                Repeat(4, () => new OtherPiece(6, "Captain")),
-                Repeat(3, () => new OtherPiece(7, "Major")),
-                Repeat(2, () => new OtherPiece(8, "Colonel")),
-                Repeat(1, () => new OtherPiece(9, "General")),
-                Repeat(1, () => new OtherPiece(10, "Marshal")),
-                Repeat(6, () => new Bomb())
+                Repeat(1, () => new Flag(owner)),
+                Repeat(1, () => new Spy(owner)),
+                Repeat(8, () => new Scout(owner)),
+                Repeat(5, () => new Miner(owner)),
+                Repeat(4, () => new OtherPiece(4, owner)),
+                Repeat(4, () => new OtherPiece(5, owner)),
+                Repeat(4, () => new OtherPiece(6, owner)),
+                Repeat(3, () => new OtherPiece(7, owner)),
+                Repeat(2, () => new OtherPiece(8, owner)),
+                Repeat(1, () => new OtherPiece(9, owner)),
+                Repeat(1, () => new OtherPiece(10, owner)),
+                Repeat(6, () => new Bomb(owner))
             }.SelectMany(v => v);
         }
     }
@@ -35,10 +35,12 @@ namespace Stratego.Core
     public abstract class Piece
     {
         public readonly string Name;
+        public readonly Player Owner;
         public readonly int Rank;
 
-        protected Piece(int rank, string name)
+        protected Piece(Player owner, int rank, string name)
         {
+            Owner = owner;
             Rank = rank;
             Name = name;
         }
@@ -46,48 +48,73 @@ namespace Stratego.Core
 
     public class Flag : Piece
     {
-        public Flag()
-            : base(0, "Flag")
+        public Flag(Player owner)
+            : base(owner, 0, "Flag")
         {
         }
     }
 
     public class Spy : Piece
     {
-        public Spy()
-            : base(1, "Spy")
+        public Spy(Player owner)
+            : base(owner, 1, "Spy")
         {
         }
     }
 
     public class Scout : Piece
     {
-        public Scout()
-            : base(2, "Scout")
+        public Scout(Player owner)
+            : base(owner, 2, "Scout")
         {
         }
     }
 
     public class Miner : Piece
     {
-        public Miner()
-            : base(3, "Miner")
+        public Miner(Player owner)
+            : base(owner, 3, "Miner")
         {
         }
     }
 
     public class OtherPiece : Piece
     {
-        public OtherPiece(int rank, string name)
-            : base(rank, name)
+        static string GetNameFromRank(int rank)
+        {
+            switch (rank)
+            {
+                case 4:
+                    return "Sergeant";
+                case 5:
+                    return "Lieutenant";
+                case 6:
+                    return "Captain";
+                case 7:
+                    return "Major";
+                case 8:
+                    return "Colonel";
+                case 9:
+                    return "General";
+                case 10:
+                    return "Marshal";
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(rank));
+        }
+
+        /// <param name="rank">[4, 10]</param>
+        /// <param name="owner"></param>
+        public OtherPiece(int rank, Player owner)
+            : base(owner, rank, GetNameFromRank(rank))
         {
         }
     }
 
     public class Bomb : Piece
     {
-        public Bomb()
-            : base(11, "Bomb")
+        public Bomb(Player owner)
+            : base(owner, 11, "Bomb")
         {
         }
     }
