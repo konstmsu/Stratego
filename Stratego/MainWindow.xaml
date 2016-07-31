@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Stratego"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="Stratego" SizeToContent="WidthAndHeight">
     <Window.DataContext>
         <local:GameViewModel />
     </Window.DataContext>
@@ -22,7 +22,10 @@
                         <DataTemplate>
                             <Grid>
                                 <Border BorderBrush="Gray" BorderThickness="1">
-                                    <TextBlock Text="{Binding Content}" Foreground="{Binding Color}" Width="50" />
+                                    <TextBlock Text="{Binding Content}" 
+                                               Foreground="{Binding Color}" 
+                                               Background="{Binding Background}"
+                                               Width="50" FontSize="36" TextAlignment="Center" />
                                 </Border>
                             </Grid>
                         </DataTemplate>

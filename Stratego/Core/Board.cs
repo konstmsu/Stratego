@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Stratego.Core
 {
@@ -10,17 +12,17 @@ namespace Stratego.Core
 
         public Board()
         {
-            var width = 10;
-            var height = 10;
+            var lakeRows = new[] { 4, 5 };
+            var lakeColumns = new[] { 2, 3, 6, 7 };
 
-            for (var lineIndex = 0; lineIndex < height; lineIndex++)
+            for (var r = 0; r < 10; r++)
             {
-                var l = new List<Cell>();
+                var row = new List<Cell>();
 
-                for (var column = 0; column < width; column++)
-                    l.Add(new Cell());
+                for (var c = 0; c < 10; c++)
+                    row.Add(new Cell(lakeRows.Contains(r) && lakeColumns.Contains(c)));
 
-                _cells.Add(l);
+                _cells.Add(row);
             }
         }
 
@@ -30,6 +32,25 @@ namespace Stratego.Core
 
     public class Cell
     {
-        public Piece Piece;
+        Piece _piece;
+        public readonly bool IsLake;
+
+        public Piece Piece
+        {
+            get { return _piece; }
+
+            set
+            {
+                if (IsLake)
+                    throw new InvalidOperationException();
+
+                _piece = value;
+            }
+        }
+
+        public Cell(bool isLake)
+        {
+            IsLake = isLake;
+        }
     }
 }

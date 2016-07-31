@@ -5,7 +5,7 @@ using Stratego.Core;
 namespace Stratego
 {
     [TestClass]
-    public class FieldTests
+    public class GameTests
     {
         class MoveTestContext
         {

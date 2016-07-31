@@ -17,29 +17,28 @@ namespace Stratego
             Game = new Game();
             Board = new BoardViewModel(Game.Board.RowCount, Game.Board.ColumnCount);
 
-            Place(new Flag(Game.Players[0]), new Position(1, 1));
-            Place(new Flag(Game.Players[1]), new Position(8, 8));
+            InitialSetup.Setup(Game, KnownSetups.VincentDeboer, 0);
+            InitialSetup.Setup(Game, KnownSetups.VincentDeboer, 1);
+
+            UpdateContents();
         }
 
         public BoardViewModel Board { get; }
-
-        public void Place(Piece piece, Position position)
-        {
-            Game.Board[position].Piece = piece;
-            UpdateContents();
-        }
 
         void UpdateContents()
         {
             for(var row = 0; row < Game.Board.RowCount; row++)
                 for (var column = 0; column < Game.Board.ColumnCount; column++)
                 {
-                    var piece = Game.Board[new Position(row, column)].Piece;
+                    var cell = Game.Board[new Position(row, column)];
+                    var piece = cell.Piece;
                     var cellViewModel = Board.Rows[row].Cells[column];
+
+                    cellViewModel.Background = cell.IsLake ? Brushes.Aqua : Brushes.Transparent;
 
                     if (piece != null)
                     {
-                        cellViewModel.Content = piece.Name;
+                        cellViewModel.Content = piece.ShortDisplayName;
                         cellViewModel.Color = piece.Owner == Game.Players[0] ? Brushes.Red : Brushes.Blue;
                     }
                     else
@@ -76,6 +75,7 @@ namespace Stratego
     {
         string _content;
         SolidColorBrush _color;
+        SolidColorBrush _background;
 
         public string Content
         {
@@ -95,6 +95,17 @@ namespace Stratego
             {
                 if (value.Equals(_color)) return;
                 _color = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public SolidColorBrush Background
+        {
+            get { return _background; }
+            set
+            {
+                if (Equals(value, _background)) return;
+                _background = value;
                 OnPropertyChanged();
             }
         }
