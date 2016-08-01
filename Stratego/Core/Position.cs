@@ -1,6 +1,6 @@
 ﻿namespace Stratego.Core
 {
-    public class Position
+    public struct Position
     {
         public readonly int Column;
         public readonly int Row;

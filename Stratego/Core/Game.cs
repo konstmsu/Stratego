@@ -1,4 +1,6 @@
-﻿namespace Stratego.Core
+﻿using System.Collections.ObjectModel;
+
+namespace Stratego.Core
 {
     public class Game
     {
@@ -21,6 +23,17 @@
                 Board[to].Piece = attacker;
             else if (defender.Rank == attacker.Rank)
                 Board[to].Piece = null;
+        }
+
+        public ReadOnlyCollection<Position> GetPossibleMoves(Position from)
+        {
+            return new[]
+            {
+                new Position(from.Row - 1, from.Column),
+                new Position(from.Row + 1, from.Column),
+                new Position(from.Row, from.Column - 1),
+                new Position(from.Row, from.Column + 1)
+            }.ToReadOnly();
         }
     }
 }

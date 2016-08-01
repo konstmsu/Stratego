@@ -20,8 +20,8 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Grid>
-                                <Border BorderBrush="Gray" BorderThickness="1">
+                            <Grid MouseEnter="Cell_OnMouseEnter">
+                                <Border BorderBrush="{Binding BorderColor}" BorderThickness="0">
                                     <TextBlock Text="{Binding Content}"
                                                Foreground="{Binding Color}"
                                                Background="{Binding Background}"

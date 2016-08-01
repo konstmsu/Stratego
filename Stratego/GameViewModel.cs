@@ -15,7 +15,7 @@ namespace Stratego
         public GameViewModel()
         {
             Game = new Game();
-            Board = new BoardViewModel(Game.Board.RowCount, Game.Board.ColumnCount);
+            Board = new BoardViewModel(this);
 
             InitialSetup.Setup(Game, KnownSetups.VincentDeboer, 0);
             InitialSetup.Setup(Game, KnownSetups.VincentDeboer, 1);
@@ -51,10 +51,10 @@ namespace Stratego
 
     public class BoardViewModel
     {
-        public BoardViewModel(int rowCount, int columnCount)
+        public BoardViewModel(GameViewModel game)
         {
-            foreach (var row in Enumerable.Range(0, rowCount))
-                Rows.Add(new BoardRowViewModel(columnCount));
+            foreach (var row in Enumerable.Range(0, game.Game.Board.RowCount))
+                Rows.Add(new BoardRowViewModel(game, row));
         }
 
         public ObservableCollection<BoardRowViewModel> Rows { get; } = new ObservableCollection<BoardRowViewModel>();
@@ -62,10 +62,10 @@ namespace Stratego
 
     public class BoardRowViewModel
     {
-        public BoardRowViewModel(int columnCount)
+        public BoardRowViewModel(GameViewModel game, int row)
         {
-            foreach (var column in Enumerable.Range(0, columnCount))
-                Cells.Add(new CellViewModel());
+            foreach (var column in Enumerable.Range(0, game.Game.Board.ColumnCount))
+                Cells.Add(new CellViewModel(game, new Position(row, column)));
         }
 
         public ObservableCollection<CellViewModel> Cells { get; } = new ObservableCollection<CellViewModel>();
@@ -73,9 +73,19 @@ namespace Stratego
 
     public class CellViewModel : INotifyPropertyChanged
     {
+        readonly GameViewModel _game;
+        readonly Position _position;
+
         SolidColorBrush _background;
         SolidColorBrush _color;
         string _content;
+        bool _isPossibleMove;
+
+        public CellViewModel(GameViewModel game, Position position)
+        {
+            _game = game;
+            _position = position;
+        }
 
         public string Content
         {
@@ -110,12 +120,45 @@ namespace Stratego
             }
         }
 
+        public SolidColorBrush BorderColor
+        {
+            get { return IsPossibleMove ? Brushes.Blue : Brushes.Gray; }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public void HighlightPossibleMoves()
+        {
+            var moves = _game.Game.GetPossibleMoves(_position);
+
+            foreach (var r in _game.Board.Rows)
+                foreach (var c in r.Cells)
+                    c.IsPossibleMove = moves.Contains(c._position);
+        }
+
+        void ClearPossibleMovesHighlights()
+        {
+            foreach (var r in _game.Board.Rows)
+                foreach (var c in r.Cells)
+                    c.IsPossibleMove = false;
+        }
+
+        public bool IsPossibleMove
+        {
+            get { return _isPossibleMove; }
+            set
+            {
+                if (value == _isPossibleMove) return;
+                _isPossibleMove = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(BorderColor));
+            }
         }
     }
 }
