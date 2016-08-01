@@ -21,7 +21,7 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Grid MouseEnter="Cell_OnMouseEnter">
-                                <Border BorderBrush="{Binding BorderColor}" BorderThickness="0">
+                                <Border BorderBrush="{Binding BorderColor}" BorderThickness="1">
                                     <TextBlock Text="{Binding Content}"
                                                Foreground="{Binding Color}"
                                                Background="{Binding Background}"
