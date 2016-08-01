@@ -1,9 +1,7 @@
-﻿using System.Runtime;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Stratego.Core;
 
-namespace Stratego
+namespace Stratego.Core
 {
     [TestClass]
     public class ScoutTests
@@ -47,6 +45,32 @@ namespace Stratego
             new Scout(null).GetPossibleMoves(board, new Position(0, 0)).Should().BeEquivalentTo(new[]
             {
                 new Position(0, 1)
+            });
+        }
+
+        [TestMethod]
+        public void ShouldNotAttackOwner()
+        {
+            var board = new Board(1, 10, p => false);
+            var player = new Player();
+            board[new Position(0, 2)].Piece = new Flag(player);
+
+            new Scout(player).GetPossibleMoves(board, new Position(0, 0)).Should().BeEquivalentTo(new[]
+            {
+                new Position(0, 1)
+            });
+        }
+
+        [TestMethod]
+        public void ShouldAttackEnemy()
+        {
+            var board = new Board(1, 10, p => false);
+            board[new Position(0, 2)].Piece = new Flag(new Player());
+
+            new Scout(new Player()).GetPossibleMoves(board, new Position(0, 0)).Should().BeEquivalentTo(new[]
+            {
+                new Position(0, 1),
+                new Position(0, 2),
             });
         }
     }

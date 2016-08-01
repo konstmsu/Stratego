@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="Stratego" SizeToContent="WidthAndHeight">
     <Window.DataContext>
-        <local:GameViewModel />
+        <local:DesignGameViewModel />
     </Window.DataContext>
     <ItemsControl ItemsSource="{Binding Board.Rows}">
         <ItemsControl.ItemsPanel>
@@ -34,6 +34,9 @@
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding IsPossibleMove}" Value="true">
                                                 <Setter Property="Background" Value="PaleGreen" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsPossibleAttack}" Value="true">
+                                                <Setter Property="Background" Value="DarkOrange" />
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding IsMouseOver}" Value="true">
                                                 <Setter Property="Background" Value="DarkSeaGreen" />

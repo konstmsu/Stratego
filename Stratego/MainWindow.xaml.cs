@@ -10,8 +10,6 @@ namespace Stratego
             InitializeComponent();
         }
 
-        GameViewModel ViewModel => (GameViewModel)DataContext;
-
         void Cell_OnMouseEnter(object sender, MouseEventArgs e)
         {
             ((CellViewModel)((FrameworkElement)sender).DataContext).HighlightPossibleMoves();

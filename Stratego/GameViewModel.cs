@@ -3,23 +3,40 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Media;
-using Stratego.Annotations;
 using Stratego.Core;
+using Stratego.Properties;
 
 namespace Stratego
 {
+    public static class GameFactory
+    {
+        public static Game CreateWithDefaultSetup()
+        {
+            var game = new Game();
+
+            InitialSetup.Setup(game, KnownSetups.VincentDeboer, 0);
+            InitialSetup.Setup(game, KnownSetups.VincentDeboer, 1);
+
+            return game;
+        }
+    }
+
+    public class DesignGameViewModel : GameViewModel
+    {
+        public DesignGameViewModel() 
+            : base(GameFactory.CreateWithDefaultSetup())
+        {
+        }
+    }
+
     public class GameViewModel
     {
         public readonly Game Game;
 
-        public GameViewModel()
+        public GameViewModel(Game game)
         {
-            Game = new Game();
+            Game = game;
             Board = new BoardViewModel(this);
-
-            InitialSetup.Setup(Game, KnownSetups.VincentDeboer, 0);
-            InitialSetup.Setup(Game, KnownSetups.VincentDeboer, 1);
-
             UpdateContents();
         }
 
@@ -58,6 +75,8 @@ namespace Stratego
         }
 
         public ObservableCollection<BoardRowViewModel> Rows { get; } = new ObservableCollection<BoardRowViewModel>();
+
+        public CellViewModel this[Position position] => Rows[position.Row].Cells[position.Column];
     }
 
     public class BoardRowViewModel
@@ -74,18 +93,19 @@ namespace Stratego
     public class CellViewModel : INotifyPropertyChanged
     {
         readonly GameViewModel _game;
-        readonly Position _position;
+        public readonly Position Position;
 
         SolidColorBrush _color;
         string _content;
         bool _isPossibleMove;
         bool _isLake;
         bool _isMouseOver;
+        bool _isPossibleAttack;
 
         public CellViewModel(GameViewModel game, Position position)
         {
             _game = game;
-            _position = position;
+            Position = position;
         }
 
         public string Content
@@ -131,15 +151,18 @@ namespace Stratego
 
         public void HighlightPossibleMoves()
         {
-            var moves = _game.Game.GetPossibleMoves(_position);
+            var moves = _game.Game.GetPossibleMoves(Position);
 
             foreach (var r in _game.Board.Rows)
                 foreach (var c in r.Cells)
                 {
                     c.IsMouseOver = c == this;
-                    c.IsPossibleMove = moves.Contains(c._position);
+                    c.IsPossibleMove = moves.Contains(c.Position);
+                    c.IsPossibleAttack = c.IsPossibleMove && Piece != null && c.Piece != null && c.Piece.Owner != Piece.Owner;
                 }
         }
+
+        Piece Piece => _game.Game.Board[Position].Piece;
 
         public bool IsMouseOver
         {
@@ -159,6 +182,17 @@ namespace Stratego
             {
                 if (value == _isPossibleMove) return;
                 _isPossibleMove = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsPossibleAttack
+        {
+            get { return _isPossibleAttack; }
+            set
+            {
+                if (value == _isPossibleAttack) return;
+                _isPossibleAttack = value;
                 OnPropertyChanged();
             }
         }

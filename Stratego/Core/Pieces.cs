@@ -20,15 +20,30 @@ namespace Stratego.Core
 
         public abstract IReadOnlyCollection<Position> GetPossibleMoves(Board board, Position from);
 
-        protected static IReadOnlyCollection<Position> GetPossibleMoves2(Board board, Position from)
+        protected IReadOnlyCollection<Position> GetPossibleDirectMoves(Board board, Position from, int maxDistance)
         {
-            return new[]
-            {
-                new Position(from.Row - 1, from.Column),
-                new Position(from.Row + 1, from.Column),
-                new Position(from.Row, from.Column - 1),
-                new Position(from.Row, from.Column + 1)
-            };
+            var possibleMoves = new List<Position>();
+
+            foreach (var direction in new[] { new Position(1, 0), new Position(-1, 0), new Position(0, 1), new Position(0, -1) })
+                for (var distance = 1; distance <= maxDistance; distance++)
+                {
+                    var position = from + direction * distance;
+
+                    var cell = board[position];
+
+                    if (cell == null || cell.IsLake)
+                        break;
+
+                    if (cell.Piece != null && cell.Piece.Owner == Owner)
+                        break;
+
+                    possibleMoves.Add(position);
+
+                    if (cell.Piece != null)
+                        break;
+                }
+
+            return possibleMoves;
         }
     }
 
@@ -58,35 +73,22 @@ namespace Stratego.Core
 
         public override IReadOnlyCollection<Position> GetPossibleMoves(Board board, Position from)
         {
-            return GetPossibleMoves2(board, from);
+            return GetPossibleDirectMoves(board, from, 1);
         }
     }
 
     public class Scout : Piece
     {
+        public new static readonly int Rank = 2;
+
         public Scout(Player owner)
-            : base(owner, 2, "Scout")
+            : base(owner, Rank, "Scout")
         {
         }
 
         public override IReadOnlyCollection<Position> GetPossibleMoves(Board board, Position from)
         {
-            var possibleMoves = new List<Position>();
-
-            foreach (var direction in new[] { new Position(1, 0), new Position(-1, 0), new Position(0, 1), new Position(0, -1) })
-                for (var distance = 1;; distance++)
-                {
-                    var position = from + direction * distance;
-
-                    var cell = board[position];
-
-                    if (cell == null || cell.Piece != null || cell.IsLake)
-                        break;
-
-                    possibleMoves.Add(position);
-                }
-
-            return possibleMoves;
+            return GetPossibleDirectMoves(board, from, Math.Max(board.RowCount, board.ColumnCount));
         }
     }
 
@@ -99,7 +101,7 @@ namespace Stratego.Core
 
         public override IReadOnlyCollection<Position> GetPossibleMoves(Board board, Position from)
         {
-            return GetPossibleMoves2(board, from);
+            return GetPossibleDirectMoves(board, from, 1);
         }
     }
 
@@ -137,7 +139,7 @@ namespace Stratego.Core
 
         public override IReadOnlyCollection<Position> GetPossibleMoves(Board board, Position from)
         {
-            return GetPossibleMoves2(board, from);
+            return GetPossibleDirectMoves(board, from, 1);
         }
     }
 

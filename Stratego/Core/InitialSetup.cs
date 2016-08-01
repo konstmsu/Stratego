@@ -18,7 +18,7 @@ namespace Stratego.Core
             }
         }
 
-        static Piece CreatePiece(int rank, Player owner)
+        public static Piece CreatePiece(int rank, Player owner)
         {
             switch (rank)
             {

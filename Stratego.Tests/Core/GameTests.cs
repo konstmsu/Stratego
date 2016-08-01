@@ -1,8 +1,7 @@
 ﻿using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Stratego.Core;
 
-namespace Stratego
+namespace Stratego.Core
 {
     [TestClass]
     public class GameTests

@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
-using Stratego.Core;
 
-namespace Stratego
+namespace Stratego.Core
 {
     public static class Validation
     {
