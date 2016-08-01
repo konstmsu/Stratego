@@ -2,13 +2,13 @@
 {
     public class Game
     {
+        public readonly Board Board = new Board();
+
         public readonly Player[] Players =
         {
             new Player(),
-            new Player(),
+            new Player()
         };
-
-        public readonly Board Board = new Board();
 
         public void Move(Position from, Position to)
         {

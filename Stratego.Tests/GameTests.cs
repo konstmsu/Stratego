@@ -7,31 +7,6 @@ namespace Stratego
     [TestClass]
     public class GameTests
     {
-        class MoveTestContext
-        {
-            public readonly Game Game;
-            public readonly Position P1 = new Position(1, 3);
-            public readonly Position P2 = new Position(2, 3);
-            public readonly OtherPiece Attacker;
-            public readonly OtherPiece Defender;
-
-            public MoveTestContext(Game game, OtherPiece attacker, OtherPiece defender)
-            {
-                Attacker = attacker;
-                Defender = defender;
-                Game = game;
-
-                game.Board[P1].Piece = attacker;
-                game.Board[P2].Piece = defender;
-            }
-
-            public static MoveTestContext RankBased(int attackerRank, int defenderRank)
-            {
-                var game = new Game();
-                return new MoveTestContext(game, new OtherPiece(attackerRank, game.Players[0]), new OtherPiece(defenderRank, game.Players[1]));
-            }
-        }
-
         [TestMethod]
         public void ShouldMove()
         {
@@ -76,6 +51,31 @@ namespace Stratego
 
             c.Game.Board[c.P1].Piece.Should().BeNull();
             c.Game.Board[c.P2].Piece.Should().BeNull();
+        }
+
+        class MoveTestContext
+        {
+            public readonly OtherPiece Attacker;
+            public readonly OtherPiece Defender;
+            public readonly Game Game;
+            public readonly Position P1 = new Position(1, 3);
+            public readonly Position P2 = new Position(2, 3);
+
+            public MoveTestContext(Game game, OtherPiece attacker, OtherPiece defender)
+            {
+                Attacker = attacker;
+                Defender = defender;
+                Game = game;
+
+                game.Board[P1].Piece = attacker;
+                game.Board[P2].Piece = defender;
+            }
+
+            public static MoveTestContext RankBased(int attackerRank, int defenderRank)
+            {
+                var game = new Game();
+                return new MoveTestContext(game, new OtherPiece(attackerRank, game.Players[0]), new OtherPiece(defenderRank, game.Players[1]));
+            }
         }
     }
 }

@@ -1,6 +1,4 @@
-﻿using System.Windows;
-
-namespace Stratego
+﻿namespace Stratego
 {
     public partial class MainWindow
     {

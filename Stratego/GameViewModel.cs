@@ -27,7 +27,7 @@ namespace Stratego
 
         void UpdateContents()
         {
-            for(var row = 0; row < Game.Board.RowCount; row++)
+            for (var row = 0; row < Game.Board.RowCount; row++)
                 for (var column = 0; column < Game.Board.ColumnCount; column++)
                 {
                     var cell = Game.Board[new Position(row, column)];
@@ -51,31 +51,31 @@ namespace Stratego
 
     public class BoardViewModel
     {
-        public ObservableCollection<BoardRowViewModel> Rows { get; } = new ObservableCollection<BoardRowViewModel>();
-
         public BoardViewModel(int rowCount, int columnCount)
         {
             foreach (var row in Enumerable.Range(0, rowCount))
                 Rows.Add(new BoardRowViewModel(columnCount));
         }
+
+        public ObservableCollection<BoardRowViewModel> Rows { get; } = new ObservableCollection<BoardRowViewModel>();
     }
 
     public class BoardRowViewModel
     {
-        public ObservableCollection<CellViewModel> Cells { get; } = new ObservableCollection<CellViewModel>();
-
         public BoardRowViewModel(int columnCount)
         {
             foreach (var column in Enumerable.Range(0, columnCount))
                 Cells.Add(new CellViewModel());
         }
+
+        public ObservableCollection<CellViewModel> Cells { get; } = new ObservableCollection<CellViewModel>();
     }
 
     public class CellViewModel : INotifyPropertyChanged
     {
-        string _content;
-        SolidColorBrush _color;
         SolidColorBrush _background;
+        SolidColorBrush _color;
+        string _content;
 
         public string Content
         {

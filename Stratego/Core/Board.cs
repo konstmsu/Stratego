@@ -8,8 +8,6 @@ namespace Stratego.Core
     {
         readonly List<List<Cell>> _cells = new List<List<Cell>>();
 
-        public Cell this[Position position] => _cells[position.Row][position.Column];
-
         public Board()
         {
             var lakeRows = new[] { 4, 5 };
@@ -26,14 +24,21 @@ namespace Stratego.Core
             }
         }
 
+        public Cell this[Position position] => _cells[position.Row][position.Column];
+
         public int RowCount => _cells.Count;
         public int ColumnCount => _cells[0].Count;
     }
 
     public class Cell
     {
-        Piece _piece;
         public readonly bool IsLake;
+        Piece _piece;
+
+        public Cell(bool isLake)
+        {
+            IsLake = isLake;
+        }
 
         public Piece Piece
         {
@@ -46,11 +51,6 @@ namespace Stratego.Core
 
                 _piece = value;
             }
-        }
-
-        public Cell(bool isLake)
-        {
-            IsLake = isLake;
         }
     }
 }

@@ -22,8 +22,8 @@
                         <DataTemplate>
                             <Grid>
                                 <Border BorderBrush="Gray" BorderThickness="1">
-                                    <TextBlock Text="{Binding Content}" 
-                                               Foreground="{Binding Color}" 
+                                    <TextBlock Text="{Binding Content}"
+                                               Foreground="{Binding Color}"
                                                Background="{Binding Background}"
                                                Width="50" FontSize="36" TextAlignment="Center" />
                                 </Border>

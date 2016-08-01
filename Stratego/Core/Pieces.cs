@@ -56,6 +56,13 @@ namespace Stratego.Core
 
     public class OtherPiece : Piece
     {
+        /// <param name="rank">[4, 10]</param>
+        /// <param name="owner"></param>
+        public OtherPiece(int rank, Player owner)
+            : base(owner, rank, GetNameFromRank(rank))
+        {
+        }
+
         static string GetNameFromRank(int rank)
         {
             switch (rank)
@@ -77,13 +84,6 @@ namespace Stratego.Core
             }
 
             throw new ArgumentOutOfRangeException(nameof(rank));
-        }
-
-        /// <param name="rank">[4, 10]</param>
-        /// <param name="owner"></param>
-        public OtherPiece(int rank, Player owner)
-            : base(owner, rank, GetNameFromRank(rank))
-        {
         }
     }
 
