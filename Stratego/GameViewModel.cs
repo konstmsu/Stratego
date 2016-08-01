@@ -34,7 +34,7 @@ namespace Stratego
                     var piece = cell.Piece;
                     var cellViewModel = Board.Rows[row].Cells[column];
 
-                    cellViewModel.Background = cell.IsLake ? Brushes.Aqua : Brushes.Transparent;
+                    cellViewModel.IsLake = cell.IsLake;
 
                     if (piece != null)
                     {
@@ -76,10 +76,10 @@ namespace Stratego
         readonly GameViewModel _game;
         readonly Position _position;
 
-        SolidColorBrush _background;
         SolidColorBrush _color;
         string _content;
         bool _isPossibleMove;
+        bool _isLake;
 
         public CellViewModel(GameViewModel game, Position position)
         {
@@ -109,20 +109,15 @@ namespace Stratego
             }
         }
 
-        public SolidColorBrush Background
+        public bool IsLake
         {
-            get { return _background; }
+            get { return _isLake; }
             set
             {
-                if (Equals(value, _background)) return;
-                _background = value;
+                if (value == _isLake) return;
+                _isLake = value;
                 OnPropertyChanged();
             }
-        }
-
-        public SolidColorBrush BorderColor
-        {
-            get { return IsPossibleMove ? Brushes.Blue : Brushes.Gray; }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -157,7 +152,6 @@ namespace Stratego
                 if (value == _isPossibleMove) return;
                 _isPossibleMove = value;
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(BorderColor));
             }
         }
     }

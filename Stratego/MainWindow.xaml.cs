@@ -1,4 +1,4 @@
-﻿using System.Windows.Controls;
+﻿using System.Windows;
 using System.Windows.Input;
 
 namespace Stratego
@@ -14,7 +14,7 @@ namespace Stratego
 
         void Cell_OnMouseEnter(object sender, MouseEventArgs e)
         {
-            ((CellViewModel)((Grid)sender).DataContext).HighlightPossibleMoves();
+            ((CellViewModel)((FrameworkElement)sender).DataContext).HighlightPossibleMoves();
         }
     }
 }

@@ -10,27 +10,42 @@
         <local:GameViewModel />
     </Window.DataContext>
     <ItemsControl ItemsSource="{Binding Board.Rows}">
+        <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+                <UniformGrid Rows="{Binding Board.Rows.Count}" />
+            </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
         <ItemsControl.ItemTemplate>
             <DataTemplate>
                 <ItemsControl ItemsSource="{Binding Cells}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <StackPanel Orientation="Horizontal" />
+                            <UniformGrid Columns="{Binding Cells.Count}" />
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Grid MouseEnter="Cell_OnMouseEnter">
-                                <Border BorderBrush="{Binding BorderColor}" BorderThickness="1">
-                                    <TextBlock Text="{Binding Content}"
-                                               Foreground="{Binding Color}"
-                                               Background="{Binding Background}"
-                                               Width="50" FontSize="36" TextAlignment="Center" />
-                                </Border>
-                            </Grid>
+                            <Border BorderBrush="Gray" BorderThickness="1" MouseEnter="Cell_OnMouseEnter">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsLake}" Value="true">
+                                                <Setter Property="Background" Value="Aqua" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsPossibleMove}" Value="true">
+                                                <Setter Property="Background" Value="PaleGreen" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <TextBlock Text="{Binding Content}"
+                                           Foreground="{Binding Color}"
+                                           Width="50" FontSize="36" TextAlignment="Center" />
+                            </Border>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
+
             </DataTemplate>
         </ItemsControl.ItemTemplate>
     </ItemsControl>
