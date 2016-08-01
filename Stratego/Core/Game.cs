@@ -1,10 +1,10 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
 
 namespace Stratego.Core
 {
     public class Game
     {
-        public readonly Board Board = new Board();
+        public readonly Board Board = Board.CreateStandard();
 
         public readonly Player[] Players =
         {
@@ -25,15 +25,14 @@ namespace Stratego.Core
                 Board[to].Piece = null;
         }
 
-        public ReadOnlyCollection<Position> GetPossibleMoves(Position from)
+        public IReadOnlyCollection<Position> GetPossibleMoves(Position from)
         {
-            return new[]
-            {
-                new Position(from.Row - 1, from.Column),
-                new Position(from.Row + 1, from.Column),
-                new Position(from.Row, from.Column - 1),
-                new Position(from.Row, from.Column + 1)
-            }.ToReadOnly();
+            var piece = Board[from].Piece;
+
+            if (piece == null)
+                return new Position[0];
+
+            return piece.GetPossibleMoves(Board, from);
         }
     }
 }

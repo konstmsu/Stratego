@@ -35,6 +35,9 @@
                                             <DataTrigger Binding="{Binding IsPossibleMove}" Value="true">
                                                 <Setter Property="Background" Value="PaleGreen" />
                                             </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsMouseOver}" Value="true">
+                                                <Setter Property="Background" Value="DarkSeaGreen" />
+                                            </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
                                 </Border.Style>

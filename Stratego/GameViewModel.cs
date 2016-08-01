@@ -80,6 +80,7 @@ namespace Stratego
         string _content;
         bool _isPossibleMove;
         bool _isLake;
+        bool _isMouseOver;
 
         public CellViewModel(GameViewModel game, Position position)
         {
@@ -134,14 +135,21 @@ namespace Stratego
 
             foreach (var r in _game.Board.Rows)
                 foreach (var c in r.Cells)
+                {
+                    c.IsMouseOver = c == this;
                     c.IsPossibleMove = moves.Contains(c._position);
+                }
         }
 
-        void ClearPossibleMovesHighlights()
+        public bool IsMouseOver
         {
-            foreach (var r in _game.Board.Rows)
-                foreach (var c in r.Cells)
-                    c.IsPossibleMove = false;
+            get { return _isMouseOver; }
+            set
+            {
+                if (value == _isMouseOver) return;
+                _isMouseOver = value;
+                OnPropertyChanged();
+            }
         }
 
         public bool IsPossibleMove

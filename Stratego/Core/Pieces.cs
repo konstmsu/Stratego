@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Stratego.Core
 {
@@ -16,6 +17,19 @@ namespace Stratego.Core
         }
 
         public virtual string ShortDisplayName => Rank.ToString();
+
+        public abstract IReadOnlyCollection<Position> GetPossibleMoves(Board board, Position from);
+
+        protected static IReadOnlyCollection<Position> GetPossibleMoves2(Board board, Position from)
+        {
+            return new[]
+            {
+                new Position(from.Row - 1, from.Column),
+                new Position(from.Row + 1, from.Column),
+                new Position(from.Row, from.Column - 1),
+                new Position(from.Row, from.Column + 1)
+            };
+        }
     }
 
     public class Flag : Piece
@@ -26,6 +40,11 @@ namespace Stratego.Core
         }
 
         public override string ShortDisplayName => "F";
+
+        public override IReadOnlyCollection<Position> GetPossibleMoves(Board board, Position from)
+        {
+            return new Position[0];
+        }
     }
 
     public class Spy : Piece
@@ -36,6 +55,11 @@ namespace Stratego.Core
         }
 
         public override string ShortDisplayName => "S";
+
+        public override IReadOnlyCollection<Position> GetPossibleMoves(Board board, Position from)
+        {
+            return GetPossibleMoves2(board, from);
+        }
     }
 
     public class Scout : Piece
@@ -44,6 +68,26 @@ namespace Stratego.Core
             : base(owner, 2, "Scout")
         {
         }
+
+        public override IReadOnlyCollection<Position> GetPossibleMoves(Board board, Position from)
+        {
+            var possibleMoves = new List<Position>();
+
+            foreach (var direction in new[] { new Position(1, 0), new Position(-1, 0), new Position(0, 1), new Position(0, -1) })
+                for (var distance = 1;; distance++)
+                {
+                    var position = from + direction * distance;
+
+                    var cell = board[position];
+
+                    if (cell == null || cell.Piece != null || cell.IsLake)
+                        break;
+
+                    possibleMoves.Add(position);
+                }
+
+            return possibleMoves;
+        }
     }
 
     public class Miner : Piece
@@ -51,6 +95,11 @@ namespace Stratego.Core
         public Miner(Player owner)
             : base(owner, 3, "Miner")
         {
+        }
+
+        public override IReadOnlyCollection<Position> GetPossibleMoves(Board board, Position from)
+        {
+            return GetPossibleMoves2(board, from);
         }
     }
 
@@ -85,6 +134,11 @@ namespace Stratego.Core
 
             throw new ArgumentOutOfRangeException(nameof(rank));
         }
+
+        public override IReadOnlyCollection<Position> GetPossibleMoves(Board board, Position from)
+        {
+            return GetPossibleMoves2(board, from);
+        }
     }
 
     public class Bomb : Piece
@@ -95,5 +149,10 @@ namespace Stratego.Core
         }
 
         public override string ShortDisplayName => "B";
+
+        public override IReadOnlyCollection<Position> GetPossibleMoves(Board board, Position from)
+        {
+            return new Position[0];
+        }
     }
 }

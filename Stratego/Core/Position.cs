@@ -10,5 +10,15 @@
             Row = row;
             Column = column;
         }
+
+        public static Position operator +(Position left, Position right)
+        {
+            return new Position(left.Row + right.Row, left.Column + right.Column);
+        }
+
+        public static Position operator *(Position left, int right)
+        {
+            return new Position(left.Row * right, left.Column * right);
+        }
     }
 }
