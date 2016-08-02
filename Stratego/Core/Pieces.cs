@@ -29,9 +29,12 @@ namespace Stratego.Core
                 {
                     var position = from + direction * distance;
 
+                    if (!board.ContainsPosition(position))
+                        break;
+
                     var cell = board[position];
 
-                    if (cell == null || cell.IsLake)
+                    if (cell.IsLake)
                         break;
 
                     if (cell.Piece != null && cell.Piece.Owner == Owner)
@@ -79,7 +82,7 @@ namespace Stratego.Core
 
     public class Scout : Piece
     {
-        public new static readonly int Rank = 2;
+        public new const int Rank = 2;
 
         public Scout(Player owner)
             : base(owner, Rank, "Scout")
@@ -132,9 +135,9 @@ namespace Stratego.Core
                     return "General";
                 case 10:
                     return "Marshal";
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(rank));
             }
-
-            throw new ArgumentOutOfRangeException(nameof(rank));
         }
 
         public override IReadOnlyCollection<Position> GetPossibleMoves(Board board, Position from)

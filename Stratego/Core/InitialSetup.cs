@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace Stratego.Core
 {
-    public class InitialSetup
+    public static class InitialSetup
     {
         public static void Setup(Game game, IReadOnlyList<IReadOnlyList<int>> setup, int player)
         {

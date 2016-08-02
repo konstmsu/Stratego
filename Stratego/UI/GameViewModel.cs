@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Windows.Input;
-using System.Windows.Media;
 using Stratego.Core;
+using Stratego.Core.Utility;
 using Stratego.UI.Utility;
 
 namespace Stratego.UI
@@ -20,7 +20,7 @@ namespace Stratego.UI
 
         public BoardViewModel Board { get; }
 
-        void UpdateContents()
+        public void UpdateContents()
         {
             Debug.Assert(Game.Board.RowCount == Board.Rows.Count);
             foreach (var r in Board.Rows)
@@ -28,7 +28,7 @@ namespace Stratego.UI
 
             foreach (var cellViewModel in Board.Cells)
             {
-                var cell = Game.Board[cellViewModel.Position];
+                var cell = Game.Board[cellViewModel.Cell.Position];
                 var piece = cell.Piece;
 
                 cellViewModel.IsLake = cell.IsLake;
@@ -38,7 +38,7 @@ namespace Stratego.UI
                 else
                 {
                     cellViewModel.Content = piece.ShortDisplayName;
-                    cellViewModel.Color = piece.Owner == Game.Players[0] ? Brushes.Red : Brushes.Blue;
+                    cellViewModel.Color = KnownColors.Players[Game.Players.IndexOf(piece.Owner)];
                 }
             }
         }

@@ -20,5 +20,10 @@
         {
             return new Position(left.Row * right, left.Column * right);
         }
+
+        public override string ToString()
+        {
+            return $"r:{Row},c:{Column}";
+        }
     }
 }

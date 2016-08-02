@@ -7,10 +7,10 @@ using Stratego.Properties;
 
 namespace Stratego.UI
 {
-    public class CellViewModel : INotifyPropertyChanged
+    public sealed class CellViewModel : INotifyPropertyChanged
     {
+        public readonly Cell Cell;
         readonly GameViewModel _game;
-        public readonly Position Position;
 
         SolidColorBrush _color;
         string _content;
@@ -20,10 +20,10 @@ namespace Stratego.UI
         bool _isPossibleAttack;
         bool _isMouseOver;
 
-        public CellViewModel(GameViewModel game, Position position)
+        public CellViewModel(GameViewModel game, Cell cell)
         {
             _game = game;
-            Position = position;
+            Cell = cell;
         }
 
         public string Content
@@ -62,7 +62,7 @@ namespace Stratego.UI
         public event PropertyChangedEventHandler PropertyChanged;
 
         [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
@@ -83,16 +83,16 @@ namespace Stratego.UI
 
         public void HighlightPossibleMoves()
         {
-            var moves = _game.Game.GetPossibleMoves(Position);
+            var moves = _game.Game.GetPossibleMoves(Cell.Position);
 
             foreach (var c in _game.Board.Cells)
             {
-                c.IsPossibleMove = moves.Contains(c.Position);
+                c.IsPossibleMove = moves.Contains(c.Cell.Position);
                 c.IsPossibleAttack = c.IsPossibleMove && Piece != null && c.Piece != null && c.Piece.Owner != Piece.Owner;
             }
         }
 
-        Piece Piece => _game.Game.Board[Position].Piece;
+        Piece Piece => _game.Game.Board[Cell.Position].Piece;
 
         public bool IsPlannedMoveStart
         {

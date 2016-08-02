@@ -9,7 +9,7 @@ namespace Stratego.Core
         [TestMethod]
         public void ShouldMove()
         {
-            var game = new Game();
+            var game = new Game(Board.CreateStandard());
             var spy = new Spy(game.Players[0]);
             game.Board[new Position(0, 0)].Piece = spy;
 
@@ -60,7 +60,7 @@ namespace Stratego.Core
             public readonly Position P1 = new Position(1, 3);
             public readonly Position P2 = new Position(2, 3);
 
-            public MoveTestContext(Game game, OtherPiece attacker, OtherPiece defender)
+            MoveTestContext(Game game, OtherPiece attacker, OtherPiece defender)
             {
                 Attacker = attacker;
                 Defender = defender;
@@ -72,7 +72,7 @@ namespace Stratego.Core
 
             public static MoveTestContext RankBased(int attackerRank, int defenderRank)
             {
-                var game = new Game();
+                var game = new Game(Board.CreateStandard());
                 return new MoveTestContext(game, new OtherPiece(attackerRank, game.Players[0]), new OtherPiece(defenderRank, game.Players[1]));
             }
         }

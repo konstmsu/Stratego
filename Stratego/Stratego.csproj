@@ -66,9 +66,11 @@
     <Compile Include="Core\Player.cs" />
     <Compile Include="Core\Position.cs" />
     <Compile Include="Core\GameFactory.cs" />
+    <Compile Include="Core\Utility\ExtensionMethods.cs" />
     <Compile Include="UI\BoardRowViewModel.cs" />
     <Compile Include="UI\BoardViewModel.cs" />
     <Compile Include="UI\CellViewModel.cs" />
+    <Compile Include="UI\KnownColors.cs" />
     <Compile Include="UI\Utility\DelegateCommand.cs" />
     <Compile Include="UI\DesignGameViewModel.cs" />
     <Compile Include="UI\GameViewModel.cs" />

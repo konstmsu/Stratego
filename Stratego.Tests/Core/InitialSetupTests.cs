@@ -8,7 +8,7 @@ namespace Stratego.Core
         [TestMethod]
         public void ShouldSetup()
         {
-            var game = new Game();
+            var game = new Game(Board.CreateStandard());
             var setup = KnownSetups.VincentDeboer;
 
             for (var player = 0; player <= 1; player++)

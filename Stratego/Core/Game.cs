@@ -4,13 +4,18 @@ namespace Stratego.Core
 {
     public class Game
     {
-        public readonly Board Board = Board.CreateStandard();
+        public readonly Board Board;
 
-        public readonly Player[] Players =
+        public readonly IReadOnlyList<Player> Players = new[]
         {
             new Player(),
             new Player()
         };
+
+        public Game(Board board)
+        {
+            Board = board;
+        }
 
         public void Move(Position from, Position to)
         {
@@ -28,11 +33,7 @@ namespace Stratego.Core
         public IReadOnlyCollection<Position> GetPossibleMoves(Position from)
         {
             var piece = Board[from].Piece;
-
-            if (piece == null)
-                return new Position[0];
-
-            return piece.GetPossibleMoves(Board, from);
+            return piece == null ? new Position[0] : piece.GetPossibleMoves(Board, from);
         }
     }
 }
