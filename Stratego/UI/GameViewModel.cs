@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Linq;
 using System.Windows.Input;
 using Stratego.Core;
 using Stratego.Core.Utility;
@@ -13,7 +14,12 @@ namespace Stratego.UI
         public GameViewModel(Game game)
         {
             Game = game;
-            CancelPlannedMoveStart = new DelegateCommand(() => Board.PlannedMoveStart?.ToggleAsPlannedMoveStart());
+            CancelPlannedMoveStart = new DelegateCommand(() =>
+            {
+                Board.PlannedMoveStart?.ToggleAsPlannedMoveStart();
+                Board.Cells.SingleOrDefault(c => c.IsMouseOver)?.HighlightPossibleMoves();
+                UpdateContents();
+            });
             Board = new BoardViewModel(this);
             UpdateContents();
         }
@@ -40,6 +46,8 @@ namespace Stratego.UI
                     cellViewModel.Content = piece.ShortDisplayName;
                     cellViewModel.Color = KnownColors.Players[Game.Players.IndexOf(piece.Owner)];
                 }
+
+                cellViewModel.Background = cellViewModel.GetHighlighting();
             }
         }
 

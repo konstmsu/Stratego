@@ -19,6 +19,7 @@ namespace Stratego.UI
         bool _isPlannedMoveStart;
         bool _isPossibleAttack;
         bool _isMouseOver;
+        SolidColorBrush _background;
 
         public CellViewModel(GameViewModel game, Cell cell)
         {
@@ -73,6 +74,8 @@ namespace Stratego.UI
 
             if (_game.Board.PlannedMoveStart == null)
                 HighlightPossibleMoves();
+
+            _game.UpdateContents();
         }
 
         void HighlightCell()
@@ -138,15 +141,64 @@ namespace Stratego.UI
             }
         }
 
+        public SolidColorBrush Background
+        {
+            get { return _background; }
+            set
+            {
+                if (value.Equals(_background)) return;
+                _background = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public void OnClick()
+        {
+            ToggleAsPlannedMoveStart();
+        }
+
         public void ToggleAsPlannedMoveStart()
         {
             foreach (var c in _game.Board.Cells)
-                if (c != this)
-                    c.IsPlannedMoveStart = false;
-                else
-                    c.IsPlannedMoveStart = !c.IsPlannedMoveStart;
+                c.IsPlannedMoveStart = c == this && c.Piece != null && !c.IsPlannedMoveStart;
 
             HighlightPossibleMoves();
+
+            _game.UpdateContents();
+        }
+
+        public SolidColorBrush GetHighlighting()
+        {
+            if (IsMouseOver)
+            {
+                if (IsLake)
+                    return KnownColors.LakeMouseOver;
+
+                if (IsPlannedMoveStart)
+                    return KnownColors.PlannedMoveStartMouseOver;
+
+                if (IsPossibleAttack)
+                    return KnownColors.PossibleAttackMouseOver;
+
+                if (IsPossibleMove)
+                    return KnownColors.PossibleMoveMouseOver;
+
+                return KnownColors.EmptyMouseOver;
+            }
+
+            if (IsLake)
+                return KnownColors.Lake;
+
+            if (IsPlannedMoveStart)
+                return KnownColors.PlannedMoveStart;
+
+            if (IsPossibleAttack)
+                return KnownColors.PossibleAttack;
+
+            if (IsPossibleMove)
+                return KnownColors.PossibleMove;
+
+            return Brushes.Transparent;
         }
     }
 }

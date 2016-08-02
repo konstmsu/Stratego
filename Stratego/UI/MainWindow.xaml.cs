@@ -17,7 +17,7 @@ namespace Stratego.UI
 
         void Cell_OnMouseDown(object sender, MouseButtonEventArgs e)
         {
-            ((CellViewModel)((FrameworkElement)sender).DataContext).ToggleAsPlannedMoveStart();
+            ((CellViewModel)((FrameworkElement)sender).DataContext).OnClick();
         }
     }
 }
