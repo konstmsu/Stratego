@@ -1,27 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using Stratego.Properties;
 
 namespace Stratego.Core
 {
     public class Board
     {
-        readonly List<List<Cell>> _cells = new List<List<Cell>>();
+        readonly ReadOnlyCollection<ReadOnlyCollection<Cell>> _cells;
 
         public Board(int rowCount, int columnCount, Func<Position, bool> isLake)
         {
-            for (var r = 0; r < rowCount; r++)
-            {
-                var row = new List<Cell>();
-
-                for (var c = 0; c < columnCount; c++)
-                {
-                    var position = new Position(r, c);
-                    row.Add(new Cell(position, isLake(position)));
-                }
-
-                _cells.Add(row);
-            }
+            _cells = Enumerable.Range(0, rowCount)
+                .Select(r => Enumerable.Range(0, columnCount)
+                    .Select(c =>
+                    {
+                        var position = new Position(r, c);
+                        return new Cell(position, isLake(position));
+                    })
+                    .ToList().AsReadOnly())
+                .ToList().AsReadOnly();
         }
 
         public Cell this[Position position]
