@@ -21,11 +21,11 @@ namespace Stratego.UI
 
             var viewModel = new GameViewModel(game);
 
-            viewModel.Board[p].HighlightPossibleMoves();
+            viewModel.Board[p].ToggleAsPlannedMoveStart();
 
             var cellPositions = GetCellPositions(viewModel);
 
-            cellPositions(c => c.IsMouseOver).Should().BeEquivalentTo(new[]
+            cellPositions(c => c.IsPlannedMoveStart).Should().BeEquivalentTo(new[]
             {
                 p
             });
@@ -39,10 +39,9 @@ namespace Stratego.UI
             });
         }
 
-        Func<Func<CellViewModel, bool>, IEnumerable<Position>> GetCellPositions(GameViewModel game) =>
-            filter => game.Board.Rows.SelectMany(r => r.Cells).Where(filter).Select(c => c.Position);
-
-
+        static Func<Func<CellViewModel, bool>, IEnumerable<Position>> GetCellPositions(GameViewModel game) =>
+            filter => game.Board.Cells.Where(filter).Select(c => c.Position);
+        
         [TestMethod]
         public void ShouldHighlightAttackMoves()
         {

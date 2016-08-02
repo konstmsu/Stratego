@@ -1,14 +1,18 @@
-﻿<Window x:Class="Stratego.MainWindow"
+﻿<Window x:Class="Stratego.UI.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Stratego"
+        xmlns:ui="clr-namespace:Stratego.UI"
         mc:Ignorable="d"
         Title="Stratego" SizeToContent="WidthAndHeight">
     <Window.DataContext>
-        <local:DesignGameViewModel />
+        <ui:DesignGameViewModel />
     </Window.DataContext>
+    <Window.InputBindings>
+        <KeyBinding Key="Escape" Command="{Binding CancelPlannedMoveStart}"></KeyBinding>
+    </Window.InputBindings>
     <ItemsControl ItemsSource="{Binding Board.Rows}">
         <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
@@ -25,12 +29,15 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Border BorderBrush="Gray" BorderThickness="1" MouseEnter="Cell_OnMouseEnter">
+                            <Border BorderBrush="Gray" BorderThickness="1" MouseEnter="Cell_OnMouseEnter" MouseDown="Cell_OnMouseDown">
                                 <Border.Style>
                                     <Style TargetType="Border">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsLake}" Value="true">
                                                 <Setter Property="Background" Value="Aqua" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsMouseOver}" Value="true">
+                                                <Setter Property="Background" Value="Bisque" />
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding IsPossibleMove}" Value="true">
                                                 <Setter Property="Background" Value="PaleGreen" />
@@ -38,7 +45,7 @@
                                             <DataTrigger Binding="{Binding IsPossibleAttack}" Value="true">
                                                 <Setter Property="Background" Value="DarkOrange" />
                                             </DataTrigger>
-                                            <DataTrigger Binding="{Binding IsMouseOver}" Value="true">
+                                            <DataTrigger Binding="{Binding IsPlannedMoveStart}" Value="true">
                                                 <Setter Property="Background" Value="DarkSeaGreen" />
                                             </DataTrigger>
                                         </Style.Triggers>
