@@ -230,7 +230,116 @@ namespace Stratego.UI
             cellPositions(c => c.IsPlannedMoveStart).Should().BeEmpty();
             cellPositions(c => c.IsPossibleMove).Should().BeEmpty();
             cellPositions(c => c.IsPossibleAttack).Should().BeEmpty();
-            cellPositions(c => c.IsMouseOver).Should().Equal(new Position(1,1));
+            cellPositions(c => c.IsMouseOver).Should().Equal(new Position(1, 1));
+        }
+
+        class AttackTestContext
+        {
+            public readonly Game Game;
+            public readonly Piece Attacker;
+            public readonly Piece Defender;
+            public readonly Position Position1 = new Position(0, 0);
+            public readonly Position Position2 = new Position(1, 0);
+            public readonly GameViewModel GameViewModel;
+
+            public Piece Piece1 => GameViewModel.Board[Position1].Cell.Piece;
+            public Piece Piece2 => GameViewModel.Board[Position2].Cell.Piece;
+
+            AttackTestContext(int attackerRank, int defenderRank)
+            {
+                Game = new Game(new Board(2, 1, _ => false));
+
+                Attacker = Game.Board[Position1].Piece = InitialSetup.CreatePiece(attackerRank, Game.Players[0]);
+                Defender = Game.Board[Position2].Piece = InitialSetup.CreatePiece(defenderRank, Game.Players[1]);
+
+                GameViewModel = new GameViewModel(Game);
+            }
+
+            public static AttackTestContext ModelAttack(int attackerRank, int defenderRank)
+            {
+                var context = new AttackTestContext(attackerRank, defenderRank);
+
+                context.GameViewModel.Board[context.Position1].OnClick();
+                context.GameViewModel.Board[context.Position2].OnClick();
+
+                var cellPositions = GetCellPositions(context.GameViewModel);
+
+                cellPositions(c => c.IsPlannedMoveStart).Should().BeEmpty();
+                cellPositions(c => c.IsPossibleMove).Should().BeEmpty();
+                cellPositions(c => c.IsPossibleAttack).Should().BeEmpty();
+
+                return context;
+            }
+
+            public void AssertAttackerWon()
+            {
+                Piece1.Should().BeNull();
+                Piece2.Should().Be(Attacker);
+            }
+
+            public void AssertAttackerLost()
+            {
+                Piece1.Should().BeNull();
+                Piece2.Should().Be(Defender);
+            }
+
+            public void AssertBothDied()
+            {
+                Piece1.Should().BeNull();
+                Piece2.Should().BeNull();
+            }
+        }
+
+        [TestMethod]
+        public void ShouldAttackAndKill()
+        {
+            AttackTestContext.ModelAttack(attackerRank: 5, defenderRank: 4).AssertAttackerWon();
+        }
+
+        [TestMethod]
+        public void ShouldAttackAndDie()
+        {
+            AttackTestContext.ModelAttack(attackerRank: 6, defenderRank: 7).AssertAttackerLost();
+        }
+
+        [TestMethod]
+        public void ShouldAttackAndBothDie()
+        {
+            AttackTestContext.ModelAttack(attackerRank: 6, defenderRank: 6).AssertBothDied();
+        }
+
+        [TestMethod]
+        public void MinerShouldAttackMineAndWin()
+        {
+            AttackTestContext.ModelAttack(attackerRank: Miner.Rank, defenderRank: Bomb.Rank).AssertAttackerWon();
+        }
+
+        [TestMethod]
+        public void SpyShouldAttackMarshalAndWin()
+        {
+            AttackTestContext.ModelAttack(attackerRank: Spy.Rank, defenderRank: OtherPiece.MarshalRank).AssertAttackerWon();
+        }
+
+        [TestMethod]
+        public void MarshalShouldAttackSpyAndWin()
+        {
+            AttackTestContext.ModelAttack(attackerRank: OtherPiece.MarshalRank, defenderRank: Spy.Rank).AssertAttackerWon();
+        }
+
+        [TestMethod]
+        public void ShouldShowPieceNames()
+        {
+            var min = Flag.Rank;
+            var max = Bomb.Rank;
+
+            var game = new Game(new Board(1, max - min + 1, _ => false));
+
+            for (var rank = min; rank <= max; rank++)
+                game.Board[new Position(0, rank - min)].Piece = InitialSetup.CreatePiece(rank, game.Players[1]);
+
+            var viewModel = new GameViewModel(game);
+            viewModel.Board.Cells.Select(c => c.PieceShortName).Should().Equal(new[] { "F", "S", "2", "3", "4", "5", "6", "7", "8", "9", "10", "B" });
+            viewModel.Board.Cells.Select(c => c.PieceLongName).Should().Equal(new[] { "Flag", "Spy", "Scout", "Miner", "Sergeant", "Lieutenant", "Captain", "Major", "Colonel", "General", "Marshal", "Bomb" });
         }
     }
 }

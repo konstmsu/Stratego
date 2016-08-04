@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Stratego.Properties;
+using Stratego.Annotations;
 
 namespace Stratego.Core
 {

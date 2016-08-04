@@ -2,8 +2,8 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Media;
+using Stratego.Annotations;
 using Stratego.Core;
-using Stratego.Properties;
 
 namespace Stratego.UI
 {
@@ -13,13 +13,14 @@ namespace Stratego.UI
         readonly GameViewModel _game;
 
         SolidColorBrush _color;
-        string _content;
+        string _pieceShortName;
         bool _isPossibleMove;
         bool _isLake;
         bool _isPlannedMoveStart;
         bool _isPossibleAttack;
         bool _isMouseOver;
         SolidColorBrush _background;
+        string _pieceLongName;
 
         public CellViewModel(GameViewModel game, Cell cell)
         {
@@ -27,13 +28,13 @@ namespace Stratego.UI
             Cell = cell;
         }
 
-        public string Content
+        public string PieceShortName
         {
-            get { return _content; }
+            get { return _pieceShortName; }
             set
             {
-                if (value == _content) return;
-                _content = value;
+                if (value == _pieceShortName) return;
+                _pieceShortName = value;
                 OnPropertyChanged();
             }
         }
@@ -152,9 +153,37 @@ namespace Stratego.UI
             }
         }
 
+        public string PieceLongName
+        {
+            get { return _pieceLongName; }
+            set
+            {
+                if (value == _pieceLongName) return;
+                _pieceLongName = value;
+                OnPropertyChanged();
+            }
+        }
+
         public void OnClick()
         {
-            ToggleAsPlannedMoveStart();
+            if (IsPossibleMove)
+                MoveHere();
+            else
+                ToggleAsPlannedMoveStart();
+        }
+
+        void MoveHere()
+        {
+            _game.Game.Move(_game.Board.PlannedMoveStart.Cell.Position, Cell.Position);
+
+            foreach (var c in _game.Board.Cells)
+            {
+                c.IsPlannedMoveStart = false;
+                c.IsPossibleMove = false;
+                c.IsPossibleAttack = false;
+            }
+
+            _game.UpdateContents();
         }
 
         public void ToggleAsPlannedMoveStart()

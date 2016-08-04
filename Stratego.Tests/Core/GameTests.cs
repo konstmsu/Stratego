@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Stratego.Core
@@ -9,14 +10,22 @@ namespace Stratego.Core
         [TestMethod]
         public void ShouldMove()
         {
-            var game = new Game(Board.CreateStandard());
-            var spy = new Spy(game.Players[0]);
-            game.Board[new Position(0, 0)].Piece = spy;
+            for (var rank = Spy.Rank; rank <= OtherPiece.MarshalRank; rank++)
+            {
+                var game = new Game(Board.CreateStandard());
 
-            game.Move(new Position(0, 0), new Position(1, 0));
+                var piece = InitialSetup.CreatePiece(rank, game.Players[0]);
 
-            game.Board[new Position(0, 0)].Piece.Should().BeNull();
-            game.Board[new Position(1, 0)].Piece.Should().Be(spy);
+                var p1 = new Position(0, 0);
+                var p2 = new Position(1, 0);
+
+                game.Board[p1].Piece = piece;
+
+                game.Move(p1, p2);
+
+                game.Board[p1].Piece.Should().BeNull();
+                game.Board[p2].Piece.Should().Be(piece);
+            }
         }
 
         [TestMethod]
@@ -75,6 +84,23 @@ namespace Stratego.Core
                 var game = new Game(Board.CreateStandard());
                 return new MoveTestContext(game, new OtherPiece(attackerRank, game.Players[0]), new OtherPiece(defenderRank, game.Players[1]));
             }
+        }
+
+        [TestMethod]
+        public void BombAndFlagCantMove()
+        {
+            Action<Func<Game, Piece>> test = createPiece =>
+            {
+                var game = new Game(Board.CreateStandard());
+
+                var p1 = new Position(1, 1);
+                game.Board[p1].Piece = createPiece(game);
+
+                new Position(0, 1).Invoking(delta => game.Move(p1, p1 + delta)).ShouldThrow<InvalidOperationException>();
+            };
+
+            test(game => new Bomb(game.Players[0]));
+            test(game => new Flag(game.Players[0]));
         }
     }
 }

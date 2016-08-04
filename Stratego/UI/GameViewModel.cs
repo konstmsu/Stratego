@@ -40,10 +40,14 @@ namespace Stratego.UI
                 cellViewModel.IsLake = cell.IsLake;
 
                 if (piece == null)
-                    cellViewModel.Content = null;
+                {
+                    cellViewModel.PieceShortName = null;
+                    cellViewModel.PieceLongName = null;
+                }
                 else
                 {
-                    cellViewModel.Content = piece.ShortDisplayName;
+                    cellViewModel.PieceShortName = piece.ShortDisplayName;
+                    cellViewModel.PieceLongName = piece.Name;
                     cellViewModel.Color = KnownColors.Players[Game.Players.IndexOf(piece.Owner)];
                 }
 

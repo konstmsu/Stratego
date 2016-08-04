@@ -48,36 +48,59 @@ namespace Stratego.Core
 
             return possibleMoves;
         }
+
+        public abstract Piece Move(Piece defender);
+
+        protected InvalidOperationException NotMovableException() => new InvalidOperationException($"{ShortDisplayName} can't move");
+
+        protected Piece AttackRankBased(Piece defender)
+        {
+            if (defender == null)
+                return this;
+
+            if (defender?.Rank < Rank)
+                return this;
+
+            if (defender.Rank == Rank)
+                return null;
+
+            return defender;
+        }
     }
 
     public class Flag : Piece
     {
+        public new const int Rank = 0;
+
         public Flag(Player owner)
-            : base(owner, 0, "Flag")
+            : base(owner, Rank, "Flag")
         {
         }
 
         public override string ShortDisplayName => "F";
 
-        public override IReadOnlyCollection<Position> GetPossibleMoves(Board board, Position from)
+        public override IReadOnlyCollection<Position> GetPossibleMoves(Board board, Position from) => new Position[0];
+
+        public override Piece Move(Piece defender)
         {
-            return new Position[0];
+            throw NotMovableException();
         }
     }
 
     public class Spy : Piece
     {
+        public new const int Rank = 1;
+
         public Spy(Player owner)
-            : base(owner, 1, "Spy")
+            : base(owner, Rank, "Spy")
         {
         }
 
         public override string ShortDisplayName => "S";
 
-        public override IReadOnlyCollection<Position> GetPossibleMoves(Board board, Position from)
-        {
-            return GetPossibleDirectMoves(board, from, 1);
-        }
+        public override IReadOnlyCollection<Position> GetPossibleMoves(Board board, Position from) => GetPossibleDirectMoves(board, from, 1);
+
+        public override Piece Move(Piece defender) => defender?.Rank == OtherPiece.MarshalRank ? this : AttackRankBased(defender);
     }
 
     public class Scout : Piece
@@ -89,27 +112,30 @@ namespace Stratego.Core
         {
         }
 
-        public override IReadOnlyCollection<Position> GetPossibleMoves(Board board, Position from)
-        {
-            return GetPossibleDirectMoves(board, from, Math.Max(board.RowCount, board.ColumnCount));
-        }
+        public override IReadOnlyCollection<Position> GetPossibleMoves(Board board, Position from) => 
+            GetPossibleDirectMoves(board, from, Math.Max(board.RowCount, board.ColumnCount));
+
+        public override Piece Move(Piece defender) => AttackRankBased(defender);
     }
 
     public class Miner : Piece
     {
+        public new const int Rank = 3;
+
         public Miner(Player owner)
-            : base(owner, 3, "Miner")
+            : base(owner, Rank, "Miner")
         {
         }
 
-        public override IReadOnlyCollection<Position> GetPossibleMoves(Board board, Position from)
-        {
-            return GetPossibleDirectMoves(board, from, 1);
-        }
+        public override IReadOnlyCollection<Position> GetPossibleMoves(Board board, Position from) => GetPossibleDirectMoves(board, from, 1);
+
+        public override Piece Move(Piece defender) => defender?.Rank == Bomb.Rank ? this : AttackRankBased(defender);
     }
 
     public class OtherPiece : Piece
     {
+        public const int MarshalRank = 10;
+
         /// <param name="rank">[4, 10]</param>
         /// <param name="owner"></param>
         public OtherPiece(int rank, Player owner)
@@ -133,7 +159,7 @@ namespace Stratego.Core
                     return "Colonel";
                 case 9:
                     return "General";
-                case 10:
+                case MarshalRank:
                     return "Marshal";
                 default:
                     throw new ArgumentOutOfRangeException(nameof(rank));
@@ -144,12 +170,16 @@ namespace Stratego.Core
         {
             return GetPossibleDirectMoves(board, from, 1);
         }
+
+        public override Piece Move(Piece defender) => AttackRankBased(defender);
     }
 
     public class Bomb : Piece
     {
+        public new const int Rank = 11;
+
         public Bomb(Player owner)
-            : base(owner, 11, "Bomb")
+            : base(owner, Rank, "Bomb")
         {
         }
 
@@ -158,6 +188,11 @@ namespace Stratego.Core
         public override IReadOnlyCollection<Position> GetPossibleMoves(Board board, Position from)
         {
             return new Position[0];
+        }
+
+        public override Piece Move(Piece defender)
+        {
+            throw NotMovableException();
         }
     }
 }

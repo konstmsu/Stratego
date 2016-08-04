@@ -24,10 +24,7 @@ namespace Stratego.Core
 
             Board[from].Piece = null;
 
-            if (defender == null || defender.Rank < attacker.Rank)
-                Board[to].Piece = attacker;
-            else if (defender.Rank == attacker.Rank)
-                Board[to].Piece = null;
+            Board[to].Piece = attacker.Move(defender);
         }
 
         public IReadOnlyCollection<Position> GetPossibleMoves(Position from)
