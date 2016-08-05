@@ -37,6 +37,8 @@ namespace Stratego.UI
                 var cell = Game.Board[cellViewModel.Cell.Position];
                 var piece = cell.Piece;
 
+                cellViewModel.IsMovable = Game.IsMovable(cell.Position);
+
                 cellViewModel.IsLake = cell.IsLake;
 
                 if (piece == null)

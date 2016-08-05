@@ -23,7 +23,7 @@
 
         public override string ToString()
         {
-            return $"r:{Row},c:{Column}";
+            return $"({Row},{Column})";
         }
     }
 }

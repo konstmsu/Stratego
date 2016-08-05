@@ -202,9 +202,9 @@ namespace Stratego.UI
             assert(1, 1, KnownColors.EmptyMouseOver);
 
             viewModel.CancelPlannedMoveStart.Execute(null);
-            assert(0, 0, Brushes.Transparent);
-            assert(1, 0, Brushes.Transparent);
-            assert(0, 1, Brushes.Transparent);
+            assert(0, 0, KnownColors.Movable);
+            assert(1, 0, KnownColors.NotMovable);
+            assert(0, 1, KnownColors.NotMovable);
             assert(1, 1, KnownColors.EmptyMouseOver);
         }
 
@@ -340,6 +340,33 @@ namespace Stratego.UI
             var viewModel = new GameViewModel(game);
             viewModel.Board.Cells.Select(c => c.PieceShortName).Should().Equal(new[] { "F", "S", "2", "3", "4", "5", "6", "7", "8", "9", "10", "B" });
             viewModel.Board.Cells.Select(c => c.PieceLongName).Should().Equal(new[] { "Flag", "Spy", "Scout", "Miner", "Sergeant", "Lieutenant", "Captain", "Major", "Colonel", "General", "Marshal", "Bomb" });
+        }
+
+        [TestMethod]
+        public void ShouldHighlightMovablePositions()
+        {
+            var game = new Game(new Board(3, 3, _ => false));
+
+            game.Board[new Position(0, 0)].Piece = InitialSetup.CreatePiece(Spy.Rank, game.Players[0]);
+            game.Board[new Position(0, 1)].Piece = InitialSetup.CreatePiece(Spy.Rank, game.Players[0]);
+            game.Board[new Position(1, 0)].Piece = InitialSetup.CreatePiece(Spy.Rank, game.Players[0]);
+
+            game.Board[new Position(2, 2)].Piece = InitialSetup.CreatePiece(Spy.Rank, game.Players[1]);
+
+            var viewModel = new GameViewModel(game);
+            var cellPositions = GetCellPositions(viewModel);
+
+            cellPositions(c => c.IsMovable).Should().BeEquivalentTo(new[] { new Position(0, 1), new Position(1, 0) });
+
+            viewModel.Board[new Position(1, 0)].Background.Should().Be(KnownColors.Movable);
+            viewModel.Board[new Position(0, 1)].Background.Should().Be(KnownColors.Movable);
+            viewModel.Board[new Position(0, 0)].Background.Should().Be(KnownColors.NotMovable);
+            viewModel.Board[new Position(2, 2)].Background.Should().Be(KnownColors.NotMovable);
+
+            viewModel.Board[new Position(1, 0)].OnClick();
+            viewModel.Board[new Position(1, 1)].OnClick();
+
+            cellPositions(c => c.IsMovable).Should().BeEquivalentTo(new[] { new Position(2, 2) });
         }
     }
 }

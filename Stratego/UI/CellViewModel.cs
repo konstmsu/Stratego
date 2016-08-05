@@ -21,6 +21,7 @@ namespace Stratego.UI
         bool _isMouseOver;
         SolidColorBrush _background;
         string _pieceLongName;
+        bool _isMovable;
 
         public CellViewModel(GameViewModel game, Cell cell)
         {
@@ -164,6 +165,17 @@ namespace Stratego.UI
             }
         }
 
+        public bool IsMovable
+        {
+            get { return _isMovable; }
+            set
+            {
+                if (value == _isMovable) return;
+                _isMovable = value;
+                OnPropertyChanged();
+            }
+        }
+
         public void OnClick()
         {
             if (IsPossibleMove)
@@ -227,7 +239,10 @@ namespace Stratego.UI
             if (IsPossibleMove)
                 return KnownColors.PossibleMove;
 
-            return Brushes.Transparent;
+            if (IsMovable)
+                return KnownColors.Movable;
+
+            return KnownColors.NotMovable;
         }
     }
 }

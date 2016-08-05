@@ -14,5 +14,7 @@ namespace Stratego.UI
         public static readonly SolidColorBrush PossibleMoveMouseOver = Brushes.ForestGreen;
         public static readonly SolidColorBrush PossibleAttackMouseOver = Brushes.DarkOrange;
         public static readonly SolidColorBrush PlannedMoveStartMouseOver = Brushes.DarkOliveGreen;
+        public static readonly SolidColorBrush Movable = Brushes.LightYellow;
+        public static readonly SolidColorBrush NotMovable = Brushes.Transparent;
     }
 }

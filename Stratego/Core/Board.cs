@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Stratego.Annotations;
@@ -7,11 +8,11 @@ namespace Stratego.Core
 {
     public class Board
     {
-        readonly ReadOnlyCollection<ReadOnlyCollection<Cell>> _cells;
+        readonly ReadOnlyCollection<ReadOnlyCollection<Cell>> _rows;
 
         public Board(int rowCount, int columnCount, Func<Position, bool> isLake)
         {
-            _cells = Enumerable.Range(0, rowCount)
+            _rows = Enumerable.Range(0, rowCount)
                 .Select(r => Enumerable.Range(0, columnCount)
                     .Select(c =>
                     {
@@ -30,12 +31,13 @@ namespace Stratego.Core
                 if (!ContainsPosition(position))
                     throw new ArgumentOutOfRangeException($"{position} is outside of the board");
 
-                return _cells[position.Row][position.Column];
+                return _rows[position.Row][position.Column];
             }
         }
 
-        public int RowCount => _cells.Count;
-        public int ColumnCount => _cells[0].Count;
+        public int RowCount => _rows.Count;
+        public int ColumnCount => _rows[0].Count;
+        public IEnumerable<Cell> Cells => _rows.SelectMany(r => r);
 
         public static Board CreateStandard()
         {

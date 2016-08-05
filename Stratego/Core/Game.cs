@@ -1,10 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Stratego.Core
 {
     public class Game
     {
         public readonly Board Board;
+
+        int _currentPlayerIndex;
 
         public readonly IReadOnlyList<Player> Players = new[]
         {
@@ -25,12 +28,20 @@ namespace Stratego.Core
             Board[from].Piece = null;
 
             Board[to].Piece = attacker.Move(defender);
+
+            _currentPlayerIndex = (_currentPlayerIndex + 1) % Players.Count;
         }
 
         public IReadOnlyCollection<Position> GetPossibleMoves(Position from)
         {
             var piece = Board[from].Piece;
-            return piece == null ? new Position[0] : piece.GetPossibleMoves(Board, from);
+
+            if (piece != null && piece.Owner == Players[_currentPlayerIndex])
+                return piece.GetPossibleMoves(Board, from);
+
+            return new Position[0];
         }
+
+        public bool IsMovable(Position from) => GetPossibleMoves(from).Any();
     }
 }
