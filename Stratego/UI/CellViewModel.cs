@@ -196,6 +196,7 @@ namespace Stratego.UI
             }
 
             _game.UpdateContents();
+            _game.OnMoveComplete();
         }
 
         public void ToggleAsPlannedMoveStart()

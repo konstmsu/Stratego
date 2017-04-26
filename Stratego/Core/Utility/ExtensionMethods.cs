@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Stratego.Core.Utility
 {
@@ -15,6 +16,11 @@ namespace Stratego.Core.Utility
                     i++;
 
             return -1;
+        }
+
+        public static T NextItem<T>(this Random random, IReadOnlyList<T> items)
+        {
+            return items[random.Next(items.Count)];
         }
     }
 }

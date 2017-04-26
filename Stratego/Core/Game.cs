@@ -9,6 +9,8 @@ namespace Stratego.Core
 
         int _currentPlayerIndex;
 
+        public int CurrentPlayerIndex => _currentPlayerIndex;
+
         public readonly IReadOnlyList<Player> Players = new[]
         {
             new Player(),

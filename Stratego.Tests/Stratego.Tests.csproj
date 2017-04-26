@@ -47,6 +47,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AI\ComputerPlayerTests.cs" />
     <Compile Include="Core\GameTests.cs" />
     <Compile Include="Core\InitialSetupTests.cs" />
     <Compile Include="Core\MoveTests.cs" />
