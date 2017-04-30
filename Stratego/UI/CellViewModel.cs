@@ -1,7 +1,10 @@
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using Stratego.Annotations;
 using Stratego.Core;
 
@@ -22,6 +25,7 @@ namespace Stratego.UI
         SolidColorBrush _background;
         string _pieceLongName;
         bool _isMovable;
+        bool _isMoving;
 
         public CellViewModel(GameViewModel game, Cell cell)
         {
@@ -31,7 +35,7 @@ namespace Stratego.UI
 
         public string PieceShortName
         {
-            get { return _pieceShortName; }
+            get => _pieceShortName;
             set
             {
                 if (value == _pieceShortName) return;
@@ -42,7 +46,7 @@ namespace Stratego.UI
 
         public SolidColorBrush Color
         {
-            get { return _color; }
+            get => _color;
             set
             {
                 if (value.Equals(_color)) return;
@@ -53,7 +57,7 @@ namespace Stratego.UI
 
         public bool IsLake
         {
-            get { return _isLake; }
+            get => _isLake;
             set
             {
                 if (value == _isLake) return;
@@ -101,7 +105,7 @@ namespace Stratego.UI
 
         public bool IsPlannedMoveStart
         {
-            get { return _isPlannedMoveStart; }
+            get => _isPlannedMoveStart;
             set
             {
                 if (value == _isPlannedMoveStart) return;
@@ -112,7 +116,7 @@ namespace Stratego.UI
 
         public bool IsMouseOver
         {
-            get { return _isMouseOver; }
+            get => _isMouseOver;
             set
             {
                 if (_isMouseOver == value) return;
@@ -123,7 +127,7 @@ namespace Stratego.UI
 
         public bool IsPossibleMove
         {
-            get { return _isPossibleMove; }
+            get => _isPossibleMove;
             set
             {
                 if (value == _isPossibleMove) return;
@@ -134,7 +138,7 @@ namespace Stratego.UI
 
         public bool IsPossibleAttack
         {
-            get { return _isPossibleAttack; }
+            get => _isPossibleAttack;
             set
             {
                 if (value == _isPossibleAttack) return;
@@ -145,7 +149,7 @@ namespace Stratego.UI
 
         public SolidColorBrush Background
         {
-            get { return _background; }
+            get => _background;
             set
             {
                 if (value.Equals(_background)) return;
@@ -156,7 +160,7 @@ namespace Stratego.UI
 
         public string PieceLongName
         {
-            get { return _pieceLongName; }
+            get => _pieceLongName;
             set
             {
                 if (value == _pieceLongName) return;
@@ -167,7 +171,7 @@ namespace Stratego.UI
 
         public bool IsMovable
         {
-            get { return _isMovable; }
+            get => _isMovable;
             set
             {
                 if (value == _isMovable) return;
@@ -176,17 +180,32 @@ namespace Stratego.UI
             }
         }
 
-        public void OnClick()
+        public bool IsMoving
+        {
+            get => _isMoving;
+            set
+            {
+                if (value == _isMoving) return;
+                _isMoving = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public void OnClick(FrameworkElement frameworkElement = null)
         {
             if (IsPossibleMove)
-                MoveHere();
+                MoveHere(frameworkElement);
             else
                 ToggleAsPlannedMoveStart();
         }
 
-        void MoveHere()
+        void MoveHere(FrameworkElement frameworkElement)
         {
-            _game.Game.Move(_game.Board.PlannedMoveStart.Cell.Position, Cell.Position);
+            IsMoving = true;
+
+            var originalPosition = _game.Board.PlannedMoveStart.Cell.Position;
+
+            _game.Game.Move(originalPosition, Cell.Position);
 
             foreach (var c in _game.Board.Cells)
             {
@@ -197,6 +216,17 @@ namespace Stratego.UI
 
             _game.UpdateContents();
             _game.OnMoveComplete();
+
+
+            var storyboard = (Storyboard)frameworkElement.FindResource("MoveStoryboard");
+            frameworkElement.RenderTransform = new TranslateTransform
+            {
+                X = frameworkElement.ActualWidth * (originalPosition.Column - Cell.Position.Column),
+                Y = frameworkElement.ActualHeight * (originalPosition.Row - Cell.Position.Row)
+            };
+            Storyboard.SetTarget(storyboard, frameworkElement);
+            storyboard.Begin();
+
         }
 
         public void ToggleAsPlannedMoveStart()

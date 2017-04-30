@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows.Input;
@@ -12,7 +13,7 @@ namespace Stratego.UI
     public class GameViewModel
     {
         public readonly Game Game;
-        readonly ComputerPlayer _player2;
+        public List<IPlayer> Players { get; set; }
 
         public GameViewModel(Game game)
         {
@@ -26,7 +27,11 @@ namespace Stratego.UI
             Board = new BoardViewModel(this);
             UpdateContents();
 
-            _player2 = new ComputerPlayer(game.Players[1]);
+            Players = new IPlayer[]
+            {
+                new HumanPlayer(),
+                new HumanPlayer(), 
+            }.ToList();
         }
 
         public BoardViewModel Board { get; }
@@ -66,12 +71,12 @@ namespace Stratego.UI
 
         public void OnMoveComplete()
         {
-            if (Game.CurrentPlayerIndex == 1)
-            {
-                var move = _player2.SuggestMove(Game);
-                Game.Move(move.From, move.To);
-            }
             UpdateContents();
+
+            var move = Players[Game.CurrentPlayerIndex].SuggestMove(Game, Game.CurrentPlayer);
+
+            if (move != null)
+                Game.Move(move.From, move.To);
         }
     }
 }

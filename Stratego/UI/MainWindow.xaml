@@ -4,18 +4,33 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:ui="clr-namespace:Stratego.UI"
+        xmlns:ai="clr-namespace:Stratego.AI"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         mc:Ignorable="d"
         Title="Stratego" SizeToContent="WidthAndHeight">
     <Window.DataContext>
-        <ui:DesignGameViewModel />
+        <ui:DesignGameViewModel>
+            <ui:DesignGameViewModel.Players>
+                <ai:HumanPlayer />
+                <ai:ComputerPlayer />
+            </ui:DesignGameViewModel.Players>
+        </ui:DesignGameViewModel>
     </Window.DataContext>
     <Window.InputBindings>
         <KeyBinding Key="Escape" Command="{Binding CancelPlannedMoveStart}" />
     </Window.InputBindings>
+    <Window.Resources>
+        <Storyboard x:Key="MoveStoryboard">
+            <DoubleAnimation
+                Storyboard.TargetProperty="RenderTransform.(TranslateTransform.X)" To="0"></DoubleAnimation>
+            <DoubleAnimation
+                Storyboard.TargetProperty="RenderTransform.(TranslateTransform.Y)" To="0"></DoubleAnimation>
+        </Storyboard>
+    </Window.Resources>
     <ItemsControl ItemsSource="{Binding Board.Rows}">
         <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
-                <UniformGrid Rows="{Binding Board.Rows.Count}" />
+                <UniformGrid x:Name="Items22" Rows="{Binding Board.Rows.Count}" />
             </ItemsPanelTemplate>
         </ItemsControl.ItemsPanel>
         <ItemsControl.ItemTemplate>
@@ -32,6 +47,9 @@
                                     Background="{Binding Background}"
                                     MouseEnter="Cell_OnMouseEnter" MouseDown="Cell_OnMouseDown">
                                 <StackPanel Orientation="Vertical">
+                                    <StackPanel.RenderTransform>
+                                        <TranslateTransform></TranslateTransform>
+                                    </StackPanel.RenderTransform>
                                     <TextBlock Text="{Binding PieceShortName}"
                                                Foreground="{Binding Color}"
                                                Width="50" FontSize="36" TextAlignment="Center" />

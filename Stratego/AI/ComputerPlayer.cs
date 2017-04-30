@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Stratego.Core;
 using Stratego.Core.Utility;
 
@@ -20,23 +17,31 @@ namespace Stratego.AI
         }
     }
 
-    public class ComputerPlayer
+    public interface IPlayer
     {
-        Random random = new Random();
-        public readonly Player Player;
+        SuggestedMove SuggestMove(Game game, Player player);
+    }
 
-        public ComputerPlayer(Player player)
+    public class HumanPlayer : IPlayer
+    {
+        public SuggestedMove SuggestMove(Game game, Player player) => null;
+    }
+
+    public class ComputerPlayer : IPlayer
+    {
+        readonly Random _random = new Random();
+
+        public ComputerPlayer()
         {
-            this.Player = player;
         }
 
-        public SuggestedMove SuggestMove(Game game)
+        public SuggestedMove SuggestMove(Game game, Player player)
         {
-            var moves = game.Board.Cells.Where(c => c.Piece?.Owner == Player)
+            var moves = game.Board.Cells.Where(c => c.Piece?.Owner == player)
                 .SelectMany(c => game.GetPossibleMoves(c.Position).Select(m => new SuggestedMove(c.Position, m)))
                 .ToList();
 
-            return random.NextItem(moves);
+            return _random.NextItem(moves);
         }
     }
 }

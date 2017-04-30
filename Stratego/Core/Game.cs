@@ -17,6 +17,8 @@ namespace Stratego.Core
             new Player()
         };
 
+        public Player CurrentPlayer => Players[_currentPlayerIndex];
+
         public Game(Board board)
         {
             Board = board;
