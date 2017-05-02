@@ -51,6 +51,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="UI\CellView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -72,6 +76,9 @@
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="UI\BoardRowViewModel.cs" />
     <Compile Include="UI\BoardViewModel.cs" />
+    <Compile Include="UI\CellView.xaml.cs">
+      <DependentUpon>CellView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\CellViewModel.cs" />
     <Compile Include="UI\KnownColors.cs" />
     <Compile Include="UI\Utility\DelegateCommand.cs" />

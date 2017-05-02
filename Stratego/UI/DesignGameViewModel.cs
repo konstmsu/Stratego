@@ -1,3 +1,4 @@
+using System.Linq;
 using Stratego.AI;
 using Stratego.Core;
 
@@ -8,7 +9,11 @@ namespace Stratego.UI
         public DesignGameViewModel()
             : base(GameFactory.CreateWithDefaultSetup())
         {
-            Players[1] = new ComputerPlayer();
+            Players = new IPlayer[]
+            {
+                new HumanPlayer(),
+                new ComputerPlayer(), 
+            }.ToList();
         }
     }
 }

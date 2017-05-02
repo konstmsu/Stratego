@@ -3,6 +3,8 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using Stratego.Annotations;
@@ -10,22 +12,29 @@ using Stratego.Core;
 
 namespace Stratego.UI
 {
+    class AnimatedCellViewModel
+    {
+        public string PieceLongName { get; set; }
+        public string PieceShortName { get; set; }
+        public SolidColorBrush Color { get; set; }
+    }
+
     public sealed class CellViewModel : INotifyPropertyChanged
     {
-        public readonly Cell Cell;
         readonly GameViewModel _game;
+        public readonly Cell Cell;
+        SolidColorBrush _background;
 
         SolidColorBrush _color;
-        string _pieceShortName;
-        bool _isPossibleMove;
         bool _isLake;
-        bool _isPlannedMoveStart;
-        bool _isPossibleAttack;
         bool _isMouseOver;
-        SolidColorBrush _background;
-        string _pieceLongName;
         bool _isMovable;
         bool _isMoving;
+        bool _isPlannedMoveStart;
+        bool _isPossibleAttack;
+        bool _isPossibleMove;
+        string _pieceLongName;
+        string _pieceShortName;
 
         public CellViewModel(GameViewModel game, Cell cell)
         {
@@ -63,41 +72,6 @@ namespace Stratego.UI
                 if (value == _isLake) return;
                 _isLake = value;
                 OnPropertyChanged();
-            }
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        [NotifyPropertyChangedInvocator]
-        void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        public void OnMouseOver()
-        {
-            HighlightCell();
-
-            if (_game.Board.PlannedMoveStart == null)
-                HighlightPossibleMoves();
-
-            _game.UpdateContents();
-        }
-
-        void HighlightCell()
-        {
-            foreach (var c in _game.Board.Cells)
-                c.IsMouseOver = c == this;
-        }
-
-        public void HighlightPossibleMoves()
-        {
-            var moves = _game.Game.GetPossibleMoves(Cell.Position);
-
-            foreach (var c in _game.Board.Cells)
-            {
-                c.IsPossibleMove = moves.Contains(c.Cell.Position);
-                c.IsPossibleAttack = c.IsPossibleMove && Piece != null && c.Piece != null && c.Piece.Owner != Piece.Owner;
             }
         }
 
@@ -191,6 +165,41 @@ namespace Stratego.UI
             }
         }
 
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public void OnMouseOver()
+        {
+            HighlightCell();
+
+            if (_game.Board.PlannedMoveStart == null)
+                HighlightPossibleMoves();
+
+            _game.UpdateContents();
+        }
+
+        void HighlightCell()
+        {
+            foreach (var c in _game.Board.Cells)
+                c.IsMouseOver = c == this;
+        }
+
+        public void HighlightPossibleMoves()
+        {
+            var moves = _game.Game.GetPossibleMoves(Cell.Position);
+
+            foreach (var c in _game.Board.Cells)
+            {
+                c.IsPossibleMove = moves.Contains(c.Cell.Position);
+                c.IsPossibleAttack = c.IsPossibleMove && Piece != null && c.Piece != null && c.Piece.Owner != Piece.Owner;
+            }
+        }
+
         public void OnClick(FrameworkElement frameworkElement = null)
         {
             if (IsPossibleMove)
@@ -217,16 +226,8 @@ namespace Stratego.UI
             _game.UpdateContents();
             _game.OnMoveComplete();
 
-
-            var storyboard = (Storyboard)frameworkElement.FindResource("MoveStoryboard");
-            frameworkElement.RenderTransform = new TranslateTransform
-            {
-                X = frameworkElement.ActualWidth * (originalPosition.Column - Cell.Position.Column),
-                Y = frameworkElement.ActualHeight * (originalPosition.Row - Cell.Position.Row)
-            };
-            Storyboard.SetTarget(storyboard, frameworkElement);
-            storyboard.Begin();
-
+            if (frameworkElement != null)
+                MainWindow.Instance.AnimateMove(frameworkElement, this, originalPosition);
         }
 
         public void ToggleAsPlannedMoveStart()
