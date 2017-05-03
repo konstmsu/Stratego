@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
+using System.Windows.Media;
 using Stratego.Core;
 using Stratego.Core.Utility;
 using Stratego.UI.Utility;
@@ -55,11 +56,16 @@ namespace Stratego.UI
                 {
                     cellViewModel.PieceShortName = piece.ShortDisplayName;
                     cellViewModel.PieceLongName = piece.Name;
-                    cellViewModel.Color = KnownColors.Players[Game.Players.IndexOf(piece.Owner)];
+                    cellViewModel.Color = GetColor(piece.Owner);
                 }
 
                 cellViewModel.Background = cellViewModel.GetHighlighting();
             }
+        }
+
+        public SolidColorBrush GetColor(Player player)
+        {
+            return KnownColors.Players[Game.Players.IndexOf(player)];
         }
 
         public ICommand CancelPlannedMoveStart { get; }

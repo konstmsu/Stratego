@@ -11,14 +11,6 @@ namespace Stratego.UI
 {
     public partial class MainWindow
     {
-        Border GetCell(Position position)
-        {
-            var viewModel = (GameViewModel)DataContext;
-            var cellViewModel = viewModel.Board.Cells.IndexOf(c => c.Cell.Position == position);
-            var cellContainer = (ContentPresenter)Board.ItemContainerGenerator.ContainerFromIndex(cellViewModel);
-            return (Border)VisualTreeHelper.GetChild(cellContainer, 0);
-        }
-
         public MainWindow()
         {
             DataContextChanged += (sender, args) =>
@@ -29,50 +21,82 @@ namespace Stratego.UI
                 var viewModel = (GameViewModel)args.NewValue;
                 viewModel.Animate += moveResult =>
                 {
-                    var attackerView = GetCell(moveResult.InitialAttackerPosition);
-                    var defenderView = GetCell(moveResult.DefenderPosition);
-                    var previousPosition = moveResult.InitialAttackerPosition;
-                    var frameworkElement = defenderView;
-                    var point = frameworkElement.TranslatePoint(new Point(0, 0), LayerForAnimation);
-                    var cell = (CellViewModel)defenderView.DataContext;
+                    var attackerCell = GetCell(moveResult.InitialAttackerPosition);
+                    var defenderCell = GetCell(moveResult.DefenderPosition);
 
-                    var view = new CellView
+                    var attackerView = new CellView
                     {
                         DataContext = new AnimatedCellViewModel
                         {
-                            Color = cell.Color,
-                            PieceLongName = cell.PieceLongName,
-                            PieceShortName = cell.PieceShortName
+                            Color = viewModel.GetColor(moveResult.Attacker.Owner),
+                            PieceLongName = moveResult.Attacker.Name,
+                            PieceShortName = moveResult.Attacker.ShortDisplayName
                         },
-                        Width = frameworkElement.ActualWidth,
-                        Height = frameworkElement.ActualHeight,
-                        Background = Brushes.White,
+                        Width = attackerCell.ActualWidth,
+                        Height = attackerCell.ActualHeight,
                         RenderTransform = new TranslateTransform(
-                            frameworkElement.ActualWidth * (previousPosition.Column - moveResult.DefenderPosition.Column),
-                            frameworkElement.ActualHeight * (previousPosition.Row - moveResult.DefenderPosition.Row))
+                            attackerCell.ActualWidth * (moveResult.InitialAttackerPosition.Column - moveResult.DefenderPosition.Column),
+                            attackerCell.ActualHeight * (moveResult.InitialAttackerPosition.Row - moveResult.DefenderPosition.Row))
                     };
-                    LayerForAnimation.Children.Add(view);
-
-                    Canvas.SetLeft(view, point.X);
-                    Canvas.SetTop(view, point.Y);
+                    LayerForAnimation.Children.Add(attackerView);
+                    var defenderLocation = defenderCell.TranslatePoint(new Point(0, 0), LayerForAnimation);
+                    Canvas.SetLeft(attackerView, defenderLocation.X);
+                    Canvas.SetTop(attackerView, defenderLocation.Y);
 
                     var storyboard = new Storyboard { SpeedRatio = 4 };
 
                     var xAnimation = new DoubleAnimation { To = 0 };
-                    Storyboard.SetTarget(xAnimation, view);
+                    Storyboard.SetTarget(xAnimation, attackerView);
                     Storyboard.SetTargetProperty(xAnimation, new PropertyPath("RenderTransform.(TranslateTransform.X)"));
                     storyboard.Children.Add(xAnimation);
 
                     var yAnimation = new DoubleAnimation { To = 0 };
-                    Storyboard.SetTarget(yAnimation, view);
+                    Storyboard.SetTarget(yAnimation, attackerView);
                     Storyboard.SetTargetProperty(yAnimation, new PropertyPath("RenderTransform.(TranslateTransform.Y)"));
                     storyboard.Children.Add(yAnimation);
 
-                    frameworkElement.Visibility = Visibility.Hidden;
+                    CellView defenderView = null;
+
+                    if (moveResult.HasAttackerDied)
+                    {
+                        var dieAnimation = new DoubleAnimation { To = 0 };
+                        Storyboard.SetTarget(dieAnimation, attackerView);
+                        Storyboard.SetTargetProperty(dieAnimation, new PropertyPath("Opacity"));
+                        storyboard.Children.Add(dieAnimation);
+                    }
+
+                    if (moveResult.Defender != null)
+                    {
+                        defenderView = new CellView
+                        {
+                            DataContext = new AnimatedCellViewModel
+                            {
+                                Color = viewModel.GetColor(moveResult.Defender.Owner),
+                                PieceLongName = moveResult.Defender.Name,
+                                PieceShortName = moveResult.Defender.ShortDisplayName
+                            },
+                            Width = defenderCell.ActualWidth,
+                            Height = defenderCell.ActualHeight,
+                        };
+                        LayerForAnimation.Children.Add(defenderView);
+                        Canvas.SetLeft(defenderView, defenderLocation.X);
+                        Canvas.SetTop(defenderView, defenderLocation.Y);
+
+                        if (moveResult.HasDefenderDied)
+                        {
+                            var dieAnimation = new DoubleAnimation { To = 0 };
+                            Storyboard.SetTarget(dieAnimation, defenderView);
+                            Storyboard.SetTargetProperty(dieAnimation, new PropertyPath("Opacity"));
+                            storyboard.Children.Add(dieAnimation);
+                        }
+                    }
+
+                    defenderCell.Visibility = Visibility.Hidden;
                     storyboard.Completed += (s2, a2) =>
                     {
-                        LayerForAnimation.Children.Remove(view);
-                        frameworkElement.Visibility = Visibility.Visible;
+                        LayerForAnimation.Children.Remove(attackerView);
+                        LayerForAnimation.Children.Remove(defenderView);
+                        defenderCell.Visibility = Visibility.Visible;
                     };
                     storyboard.Begin();
                 };
@@ -81,7 +105,14 @@ namespace Stratego.UI
             InitializeComponent();
         }
 
-        
+        Border GetCell(Position position)
+        {
+            var viewModel = (GameViewModel)DataContext;
+            var cellViewModel = viewModel.Board.Cells.IndexOf(c => c.Cell.Position == position);
+            var cellContainer = (ContentPresenter)Board.ItemContainerGenerator.ContainerFromIndex(cellViewModel);
+            return (Border)VisualTreeHelper.GetChild(cellContainer, 0);
+        }
+
 
         void Cell_OnMouseEnter(object sender, MouseEventArgs e)
         {
