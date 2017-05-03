@@ -13,37 +13,26 @@
         <KeyBinding Key="Escape" Command="{Binding CancelPlannedMoveStart}" />
     </Window.InputBindings>
     <Grid>
-        <ItemsControl ItemsSource="{Binding Board.Rows}">
+        <ItemsControl ItemsSource="{Binding Board.Cells}" x:Name="Board">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <UniformGrid Rows="{Binding Board.Rows.Count}" />
+                    <UniformGrid Columns="10"/>
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <ItemsControl ItemsSource="{Binding Cells}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <UniformGrid Columns="{Binding Cells.Count}" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Border BorderBrush="Gray" BorderThickness="1"
-                                        Background="{Binding Background}"
-                                        MouseEnter="Cell_OnMouseEnter" MouseDown="Cell_OnMouseDown">
-                                    <StackPanel Orientation="Vertical">
-                                        <TextBlock Text="{Binding PieceShortName}"
-                                                   Foreground="{Binding Color}"
-                                                   Width="50" FontSize="36" TextAlignment="Center" />
-                                        <TextBlock Text="{Binding PieceLongName}"
-                                                   Foreground="{Binding Color}"
-                                                   FontSize="12" TextAlignment="Center" />
-                                    </StackPanel>
-                                </Border>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
+                    <Border BorderBrush="Gray" BorderThickness="1"
+                            Background="{Binding Background}"
+                            MouseEnter="Cell_OnMouseEnter" MouseDown="Cell_OnMouseDown">
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text="{Binding PieceShortName}"
+                                       Foreground="{Binding Color}"
+                                       Width="50" FontSize="36" TextAlignment="Center" />
+                            <TextBlock Text="{Binding PieceLongName}"
+                                       Foreground="{Binding Color}"
+                                       FontSize="12" TextAlignment="Center" />
+                        </StackPanel>
+                    </Border>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>

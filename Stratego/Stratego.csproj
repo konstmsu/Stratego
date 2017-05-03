@@ -74,7 +74,6 @@
     <Compile Include="Core\GameFactory.cs" />
     <Compile Include="Core\Utility\ExtensionMethods.cs" />
     <Compile Include="Properties\Annotations.cs" />
-    <Compile Include="UI\BoardRowViewModel.cs" />
     <Compile Include="UI\BoardViewModel.cs" />
     <Compile Include="UI\CellView.xaml.cs">
       <DependentUpon>CellView.xaml</DependentUpon>

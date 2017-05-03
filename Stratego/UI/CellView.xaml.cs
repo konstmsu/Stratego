@@ -1,6 +1,4 @@
-﻿using System.Windows.Controls;
-
-namespace Stratego.UI
+﻿namespace Stratego.UI
 {
     public partial class CellView
     {

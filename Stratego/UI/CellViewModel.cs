@@ -2,11 +2,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Markup;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
 using Stratego.Annotations;
 using Stratego.Core;
 
@@ -29,7 +25,6 @@ namespace Stratego.UI
         bool _isLake;
         bool _isMouseOver;
         bool _isMovable;
-        bool _isMoving;
         bool _isPlannedMoveStart;
         bool _isPossibleAttack;
         bool _isPossibleMove;
@@ -154,17 +149,6 @@ namespace Stratego.UI
             }
         }
 
-        public bool IsMoving
-        {
-            get => _isMoving;
-            set
-            {
-                if (value == _isMoving) return;
-                _isMoving = value;
-                OnPropertyChanged();
-            }
-        }
-
         public event PropertyChangedEventHandler PropertyChanged;
 
         [NotifyPropertyChangedInvocator]
@@ -210,8 +194,6 @@ namespace Stratego.UI
 
         void MoveHere(FrameworkElement frameworkElement)
         {
-            IsMoving = true;
-
             var originalPosition = _game.Board.PlannedMoveStart.Cell.Position;
 
             _game.Game.Move(originalPosition, Cell.Position);
@@ -227,7 +209,7 @@ namespace Stratego.UI
             _game.OnMoveComplete();
 
             if (frameworkElement != null)
-                MainWindow.Instance.AnimateMove(frameworkElement, this, originalPosition);
+                _game.OnAnimate(new AnimateEventArgs(this, originalPosition, Cell.Position));
         }
 
         public void ToggleAsPlannedMoveStart()

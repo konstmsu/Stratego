@@ -38,10 +38,6 @@ namespace Stratego.UI
 
         public void UpdateContents()
         {
-            Debug.Assert(Game.Board.RowCount == Board.Rows.Count);
-            foreach (var r in Board.Rows)
-                Debug.Assert(Game.Board.ColumnCount == r.Cells.Count);
-
             foreach (var cellViewModel in Board.Cells)
             {
                 var cell = Game.Board[cellViewModel.Cell.Position];
@@ -68,6 +64,7 @@ namespace Stratego.UI
         }
 
         public ICommand CancelPlannedMoveStart { get; }
+        public event EventHandler<AnimateEventArgs> Animate;
 
         public void OnMoveComplete()
         {
@@ -77,6 +74,25 @@ namespace Stratego.UI
 
             if (move != null)
                 Game.Move(move.From, move.To);
+        }
+
+        public void OnAnimate(AnimateEventArgs eventArgs)
+        {
+            Animate?.Invoke(this, eventArgs);
+        }
+    }
+
+    public class AnimateEventArgs : EventArgs
+    {
+        public readonly CellViewModel Cell;
+        public readonly Position PreviousPosition;
+        public readonly Position NewPosition;
+
+        public AnimateEventArgs(CellViewModel cell, Position previousPosition, Position newPosition)
+        {
+            Cell = cell;
+            PreviousPosition = previousPosition;
+            NewPosition = newPosition;
         }
     }
 }
