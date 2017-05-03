@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Stratego.Core
@@ -27,10 +28,16 @@ namespace Stratego.Core
         public MoveResult Move(Position from, Position to)
         {
             var attacker = Board[from].Piece;
+
+            if (attacker == null || attacker.Owner != CurrentPlayer)
+                throw new InvalidOperationException();
+
             var defender = Board[to].Piece;
 
-            Board[from].Piece = null;
+            if (!GetPossibleMoves(from).Contains(to))
+                throw new InvalidOperationException();
 
+            Board[from].Piece = null;
             Board[to].Piece = attacker.Move(defender);
 
             _currentPlayerIndex = (_currentPlayerIndex + 1) % Players.Count;

@@ -118,18 +118,30 @@ namespace Stratego.Core
             game.Board[new Position(2, 1)].Piece = InitialSetup.CreatePiece(1, game.Players[1]);
             game.Board[new Position(1, 2)].Piece = InitialSetup.CreatePiece(1, game.Players[1]);
 
-            Func<IEnumerable<Position>> getMovablePositions = () => game.Board.Cells.Where(c => game.IsMovable(c.Position)).Select(c => c.Position);
+            IEnumerable<Position> GetMovablePositions() => game.Board.Cells.Where(c => game.IsMovable(c.Position)).Select(c => c.Position);
 
-            getMovablePositions().Should().BeEquivalentTo(new[] { new Position(0, 1), new Position(1, 0) });
+            GetMovablePositions().Should().BeEquivalentTo(new[] { new Position(0, 1), new Position(1, 0) });
             game.Move(new Position(0, 1), new Position(1,1));
 
-            getMovablePositions().Should().BeEquivalentTo(new[] { new Position(2, 1), new Position(1, 2) });
+            GetMovablePositions().Should().BeEquivalentTo(new[] { new Position(2, 1), new Position(1, 2) });
             game.Move(new Position(2, 1), new Position(2, 0));
 
-            getMovablePositions().Should().BeEquivalentTo(new[] { new Position(0, 0), new Position(1, 1), new Position(1, 0) });
+            GetMovablePositions().Should().BeEquivalentTo(new[] { new Position(0, 0), new Position(1, 1), new Position(1, 0) });
             game.Move(new Position(1, 0), new Position(2, 0));
 
-            getMovablePositions().Should().BeEquivalentTo(new[] { new Position(2, 2), new Position(1, 2) });
+            GetMovablePositions().Should().BeEquivalentTo(new[] { new Position(2, 2), new Position(1, 2) });
+        }
+
+        [TestMethod]
+        public void ShouldNotAllowInvalidMoves()
+        {
+            var game  = new Game(new Board(3, 4, _ => false));
+            game.Board[new Position(1, 0)].Piece = InitialSetup.CreatePiece(1, game.Players[0]);
+            game.Board[new Position(2, 2)].Piece = InitialSetup.CreatePiece(1, game.Players[1]);
+
+            foreach (var from in game.Board.Cells.Select(c => c.Position))
+            foreach (var to in game.Board.Cells.Select(c => c.Position).Except(game.GetPossibleMoves(from)))
+                to.Invoking(p => game.Move(from, p)).ShouldThrow<InvalidOperationException>();
         }
     }
 }

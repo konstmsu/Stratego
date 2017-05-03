@@ -31,10 +31,6 @@ namespace Stratego.AI
     {
         readonly Random _random = new Random();
 
-        public ComputerPlayer()
-        {
-        }
-
         public SuggestedMove SuggestMove(Game game, Player player)
         {
             var moves = game.Board.Cells.Where(c => c.Piece?.Owner == player)
