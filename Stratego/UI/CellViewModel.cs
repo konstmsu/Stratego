@@ -184,19 +184,19 @@ namespace Stratego.UI
             }
         }
 
-        public void OnClick(FrameworkElement frameworkElement = null)
+        public void OnClick()
         {
             if (IsPossibleMove)
-                MoveHere(frameworkElement);
+                _game.Board.PlannedMoveStart.MoveTo(Cell.Position);
             else
                 ToggleAsPlannedMoveStart();
         }
 
-        void MoveHere(FrameworkElement frameworkElement)
+        public void MoveTo(Position to)
         {
-            var originalPosition = _game.Board.PlannedMoveStart.Cell.Position;
+            var originalPosition = Cell.Position;
 
-            _game.Game.Move(originalPosition, Cell.Position);
+            var moveResult = _game.Game.Move(originalPosition, to);
 
             foreach (var c in _game.Board.Cells)
             {
@@ -206,12 +206,9 @@ namespace Stratego.UI
             }
 
             _game.UpdateContents();
-            _game.OnMoveComplete();
-
-            if (frameworkElement != null)
-                _game.OnAnimate(new AnimateEventArgs(this, originalPosition, Cell.Position));
+            _game.OnMoveComplete(moveResult);
         }
-
+        
         public void ToggleAsPlannedMoveStart()
         {
             foreach (var c in _game.Board.Cells)

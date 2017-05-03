@@ -4,11 +4,21 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using Stratego.Core;
+using Stratego.Core.Utility;
 
 namespace Stratego.UI
 {
     public partial class MainWindow
     {
+        Border GetCell(Position position)
+        {
+            var viewModel = (GameViewModel)DataContext;
+            var cellViewModel = viewModel.Board.Cells.IndexOf(c => c.Cell.Position == position);
+            var cellContainer = (ContentPresenter)Board.ItemContainerGenerator.ContainerFromIndex(cellViewModel);
+            return (Border)VisualTreeHelper.GetChild(cellContainer, 0);
+        }
+
         public MainWindow()
         {
             DataContextChanged += (sender, args) =>
@@ -17,13 +27,14 @@ namespace Stratego.UI
                     throw new InvalidOperationException();
 
                 var viewModel = (GameViewModel)args.NewValue;
-                viewModel.Animate += (s, e) =>
+                viewModel.Animate += moveResult =>
                 {
-                    var cell = e.Cell;
-                    var previousPosition = e.PreviousPosition;
-                    var moveTo = (ContentPresenter)Board.ItemContainerGenerator.ContainerFromItem(e.Cell);
-                    var frameworkElement = (Border)VisualTreeHelper.GetChild(moveTo, 0);
+                    var attackerView = GetCell(moveResult.InitialAttackerPosition);
+                    var defenderView = GetCell(moveResult.DefenderPosition);
+                    var previousPosition = moveResult.InitialAttackerPosition;
+                    var frameworkElement = defenderView;
                     var point = frameworkElement.TranslatePoint(new Point(0, 0), LayerForAnimation);
+                    var cell = (CellViewModel)defenderView.DataContext;
 
                     var view = new CellView
                     {
@@ -37,8 +48,8 @@ namespace Stratego.UI
                         Height = frameworkElement.ActualHeight,
                         Background = Brushes.White,
                         RenderTransform = new TranslateTransform(
-                            frameworkElement.ActualWidth * (previousPosition.Column - cell.Cell.Position.Column),
-                            frameworkElement.ActualHeight * (previousPosition.Row - cell.Cell.Position.Row))
+                            frameworkElement.ActualWidth * (previousPosition.Column - moveResult.DefenderPosition.Column),
+                            frameworkElement.ActualHeight * (previousPosition.Row - moveResult.DefenderPosition.Row))
                     };
                     LayerForAnimation.Children.Add(view);
 
@@ -81,7 +92,7 @@ namespace Stratego.UI
         {
             var frameworkElement = (FrameworkElement)sender;
             var cell = (CellViewModel)frameworkElement.DataContext;
-            cell.OnClick(frameworkElement);
+            cell.OnClick();
         }
     }
 }

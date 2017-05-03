@@ -24,7 +24,7 @@ namespace Stratego.Core
             Board = board;
         }
 
-        public void Move(Position from, Position to)
+        public MoveResult Move(Position from, Position to)
         {
             var attacker = Board[from].Piece;
             var defender = Board[to].Piece;
@@ -34,6 +34,10 @@ namespace Stratego.Core
             Board[to].Piece = attacker.Move(defender);
 
             _currentPlayerIndex = (_currentPlayerIndex + 1) % Players.Count;
+
+            return new MoveResult(attacker, defender, from, to, 
+                hasAttackerDied: Board[to].Piece != attacker,
+                hasDefenderDied: Board[to].Piece != defender);
         }
 
         public IReadOnlyCollection<Position> GetPossibleMoves(Position from)

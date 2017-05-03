@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Windows.Input;
 using Stratego.Core;
@@ -64,35 +63,18 @@ namespace Stratego.UI
         }
 
         public ICommand CancelPlannedMoveStart { get; }
-        public event EventHandler<AnimateEventArgs> Animate;
+        public event Action<MoveResult> Animate;
 
-        public void OnMoveComplete()
+        public void OnMoveComplete(MoveResult result)
         {
             UpdateContents();
+
+            Animate?.Invoke(result);
 
             var move = Players[Game.CurrentPlayerIndex].SuggestMove(Game, Game.CurrentPlayer);
 
             if (move != null)
-                Game.Move(move.From, move.To);
-        }
-
-        public void OnAnimate(AnimateEventArgs eventArgs)
-        {
-            Animate?.Invoke(this, eventArgs);
-        }
-    }
-
-    public class AnimateEventArgs : EventArgs
-    {
-        public readonly CellViewModel Cell;
-        public readonly Position PreviousPosition;
-        public readonly Position NewPosition;
-
-        public AnimateEventArgs(CellViewModel cell, Position previousPosition, Position newPosition)
-        {
-            Cell = cell;
-            PreviousPosition = previousPosition;
-            NewPosition = newPosition;
+                Board[move.From].MoveTo(move.To);
         }
     }
 }

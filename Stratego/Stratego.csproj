@@ -67,6 +67,7 @@
     <Compile Include="Core\Board.cs" />
     <Compile Include="Core\InitialSetup.cs" />
     <Compile Include="Core\Game.cs" />
+    <Compile Include="Core\MoveResult.cs" />
     <Compile Include="Core\Pieces.cs" />
     <Compile Include="Core\KnownSetups.cs" />
     <Compile Include="Core\Player.cs" />
